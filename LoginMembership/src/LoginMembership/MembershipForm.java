@@ -51,7 +51,6 @@ public class MembershipForm {
         gbc.gridy = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL; // 패스워드 필드가 수평으로 확장되도록 설정
         panel.add(passwordField, gbc);
-        
 
         JLabel la = new JLabel("주소:");
         gbc.gridx = 0;
@@ -63,19 +62,40 @@ public class MembershipForm {
         gbc.gridy = 3;
         gbc.fill = GridBagConstraints.HORIZONTAL; // 패스워드 필드가 수평으로 확장되도록 설정
         panel.add(addressField, gbc);
-        
+
         JLabel lb = new JLabel("생년월일:");
         gbc.gridx = 0;
         gbc.gridy = 4;
         panel.add(lb, gbc);
 
-        JTextField birthField = new JTextField(10); // 패스워드 필드 크기를 줄이기 위해 열 수를 10으로 설정
+        // 연도 콤보박스
+        JComboBox<String> yearComboBox = new JComboBox<>();
+        for (int year = 1900; year <= 2023; year++) {
+            yearComboBox.addItem(String.valueOf(year));
+        }
         gbc.gridx = 1;
         gbc.gridy = 4;
-        gbc.fill = GridBagConstraints.HORIZONTAL; // 패스워드 필드가 수평으로 확장되도록 설정
-        panel.add(birthField, gbc);
-        
-        
+        gbc.fill = GridBagConstraints.HORIZONTAL; // 콤보박스가 수평으로 확장되도록 설정
+        panel.add(yearComboBox, gbc);
+
+        // 월 콤보박스
+        JComboBox<String> monthComboBox = new JComboBox<>();
+        for (int month = 1; month <= 12; month++) {
+            monthComboBox.addItem(String.valueOf(month));
+        }
+        gbc.gridx = 2;
+        gbc.gridy = 4;
+        panel.add(monthComboBox, gbc);
+
+        // 일 콤보박스
+        JComboBox<String> dayComboBox = new JComboBox<>();
+        for (int day = 1; day <= 31; day++) {
+            dayComboBox.addItem(String.valueOf(day));
+        }
+        gbc.gridx = 3;
+        gbc.gridy = 4;
+        panel.add(dayComboBox, gbc);
+
         JLabel lp = new JLabel("전화번호:");
         gbc.gridx = 0;
         gbc.gridy = 5;
@@ -86,7 +106,6 @@ public class MembershipForm {
         gbc.gridy = 5;
         gbc.fill = GridBagConstraints.HORIZONTAL; // 패스워드 필드가 수평으로 확장되도록 설정
         panel.add(pNumberField, gbc);
-        
 
         JButton loginButton = new JButton("로그인 창으로");
         gbc.gridx = 0;
@@ -110,9 +129,9 @@ public class MembershipForm {
         gbc.gridwidth = 2; // 2개의 컬럼에 걸쳐서 버튼 추가
         gbc.anchor = GridBagConstraints.CENTER; // 버튼을 중앙 정렬
         panel.add(registerButton, gbc);
-        
+
         r.add(panel, BorderLayout.CENTER);
-        
+
         //회원가입 버튼 누른 후 일어나는 event
         registerButton.addActionListener(new ActionListener() {
             @Override
@@ -121,7 +140,7 @@ public class MembershipForm {
                 String id = idField.getText();
                 String password = new String(passwordField.getPassword());
                 String address = addressField.getText();
-                String birthdate = birthField.getText();
+                String birthdate = yearComboBox.getSelectedItem() + "-" + monthComboBox.getSelectedItem() + "-" + dayComboBox.getSelectedItem();
                 String phoneNumber = pNumberField.getText();
 
                 // 회원정보 중 하나라도 입력 안했을 때
@@ -134,7 +153,7 @@ public class MembershipForm {
                     JOptionPane.showMessageDialog(r, "이미 존재하는 아이디입니다!");
                     return;
                 }
-                
+
                 // 입력받은 정보에 대해 객체 생성
                 String hashedPassword = hashPassword(password);
                 Member member = new Member(name, id, hashedPassword, address, birthdate, phoneNumber);
@@ -147,25 +166,25 @@ public class MembershipForm {
         r.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         r.setVisible(true);
     }
- 
+
     //로그인창 뜨게하는 함수 
     private static void showLoginWindow() {
         LoginForm.main(new String[]{});
     }
-    
+
     // 회원가입 창에 입력 시 null 값 없이 다 입력되었는지 확인하는 함수
     private static boolean isValidInput(String name, String id, String password, String address, String birthdate, String phoneNumber) {
         return name != null && !name.isEmpty() && id != null && !id.isEmpty() && password != null && !password.isEmpty()
                 && address != null && !address.isEmpty() && birthdate != null && !birthdate.isEmpty() && phoneNumber != null && !phoneNumber.isEmpty();
     }
-    
+
     // 입력받은 회원정보를 member.text에 있는 name(parts[0]), id(parts[1])정보와 비교
     private static boolean isIdDuplicated(String id, String name) {
         try (BufferedReader br = new BufferedReader(new FileReader("members.txt"))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(",");
-                if (parts.length >= 2 && parts[1].equals(id)||parts[0].equals(name)) {
+                if (parts.length >= 2 && (parts[1].equals(id) || parts[0].equals(name))) {
                     return true;
                 }
             }
@@ -174,11 +193,11 @@ public class MembershipForm {
         }
         return false;
     }
-    
+
     //입력받은 비밀번호를 해시화
     private static String hashPassword(String password) {
         try {
-        	MessageDigest md = MessageDigest.getInstance("SHA-256");
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hashedBytes = md.digest(password.getBytes());
             StringBuilder sb = new StringBuilder();
             for (byte b : hashedBytes) {
@@ -190,6 +209,7 @@ public class MembershipForm {
         }
         return null;
     }
+
     // 입력받은 정보를 member.txt에 저장함
     private static void saveMemberToFile(Member member) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("members.txt", true))) {
@@ -198,10 +218,5 @@ public class MembershipForm {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
     }
 }
-        
-            
-  
-       
