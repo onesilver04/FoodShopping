@@ -8,7 +8,7 @@ public class MyPage extends JFrame {
     JButton btnEditInfo = new JButton("회원정보 수정하기");
     JButton btnRechargePoints = new JButton("포인트 충전하러 가기~");
     JButton btnCheckOrder = new JButton("주문 내역 확인");
-    JButton btnLogout = new JButton("로그아웃");
+//    JButton btnLogout = new JButton("로그아웃");
 
     JPanel mainPanel = new JPanel();
 	
@@ -24,7 +24,7 @@ public class MyPage extends JFrame {
         btnEditInfo.setPreferredSize(buttonSize);
         btnRechargePoints.setPreferredSize(buttonSize);
         btnCheckOrder.setPreferredSize(buttonSize);
-        btnLogout.setPreferredSize(buttonSize);
+//        btnLogout.setPreferredSize(buttonSize);
 
         // 메인 패널 생성
         mainPanel.setLayout(new GridBagLayout());
@@ -36,7 +36,7 @@ public class MyPage extends JFrame {
         mainPanel.add(btnEditInfo, gbc);
         mainPanel.add(btnRechargePoints, gbc);
         mainPanel.add(btnCheckOrder, gbc);
-        mainPanel.add(btnLogout, gbc);
+//        mainPanel.add(btnLogout, gbc);
 
         // 각 버튼에 이벤트 처리
         btnEditInfo.addActionListener(new ActionListener() { // 회원정보 수정하기
@@ -60,12 +60,12 @@ public class MyPage extends JFrame {
             }
         });
 
-        btnLogout.addActionListener(new ActionListener() { // 로그아웃
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                logout();
-            }
-        });
+//        btnLogout.addActionListener(new ActionListener() { // 로그아웃
+//            @Override
+//            public void actionPerformed(ActionEvent e) {
+//                logout();
+//            }
+//        });
 
         // 메인 패널을 프레임에 추가
         add(mainPanel);
