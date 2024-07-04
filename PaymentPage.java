@@ -16,7 +16,7 @@ public class PaymentPage extends JFrame {
     JTextArea addressTextArea;
     int totalAmount = 6000; // 할인 적용된 금액 예정
     int originalTotalAmount = 6000; // 총 금액 원본 저장(데이터 받아오기)
-	String pw;
+	String pw; // 본인확인용 비번
 
     public PaymentPage(String pw) {
 		this.pw = pw;
