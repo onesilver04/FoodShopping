@@ -16,8 +16,10 @@ public class PaymentPage extends JFrame {
     JTextArea addressTextArea;
     int totalAmount = 6000; // 할인 적용된 금액 예정
     int originalTotalAmount = 6000; // 총 금액 원본 저장(데이터 받아오기)
+	String pw;
 
-    public PaymentPage() {
+    public PaymentPage(String pw) {
+		this.pw = pw;
         setTitle("결제 페이지");
         setSize(800, 600); // 창 사이즈
         setLocationRelativeTo(null); // 창을 화면 중앙에 위치
@@ -34,7 +36,7 @@ public class PaymentPage extends JFrame {
         addressPanel.setMaximumSize(new Dimension(800, 70));
 
         // 텍스트 파일에서 주소 읽기
-        String address = readAddress(".../login/members.txt"); // 파일 경로를 실제 경로로 변경
+        String address = readAddress("C:/Users/SM-PC/Desktop/foodshopping/login/members.txt", pw); // 파일 경로를 실제 경로로 변경
         addressTextArea = new JTextArea(address);
         addressTextArea.setEditable(false);
         addressTextArea.setLineWrap(true);
@@ -154,6 +156,8 @@ public class PaymentPage extends JFrame {
                 }
             }
         });
+		
+		setVisible(true);
     }
 
     public void addProduct(String imagePath, String name, int quantity, int price) { // 상품 추가
@@ -169,23 +173,28 @@ public class PaymentPage extends JFrame {
         productPanel.add(productInfoPanel); // 상품패널에 상품 정보 표기
     }
 
-    public String readAddress(String filePath) { // txt파일에서 주소 정보 가져오기
+    public String readAddress(String filePath, String pw) { // txt파일에서 주소 정보 가져오기
         StringBuilder address = new StringBuilder();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-                address.append(line).append("\n");
+                String[] parts = line.split(",");
+                if (parts.length >= 3 && parts[4].equals(pw)) { // 다섯 번째 항목이 pw라고 가정
+                    return parts[3]; // 네 번째 항목이 주소라고 가정
+				}
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return address.toString().trim();
+        return "변경버튼을 눌러서 배송받을 주소를 입력해주세요";
     }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            PaymentPage paymentPage = new PaymentPage();
-            paymentPage.setVisible(true);
+            String pw = JOptionPane.showInputDialog(null, "비밀번호를 입력하세요:", "PW 입력", JOptionPane.PLAIN_MESSAGE);
+            if (pw != null && !pw.isEmpty()) {
+                PaymentPage paymentPage = new PaymentPage(pw);
+			}
         });
     }
 }
