@@ -1,3 +1,4 @@
+// 결제 페이지 코드
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -14,12 +15,15 @@ public class PaymentPage extends JFrame {
     ImageIcon productImage;
     JScrollPane productScrollPane;
     JTextArea addressTextArea;
-    int totalAmount = 6000; // 할인 적용된 금액 예정
-    int originalTotalAmount = 6000; // 총 금액 원본 저장(데이터 받아오기)
-	String pw; // 본인확인용 비번
+    int totalAmount; // 할인 적용된 금액 예정
+    int originalTotalAmount; // 총 금액 원본 저장(데이터 받아오기)
+    String pw; // 본인확인용 비번
 
-    public PaymentPage(String pw) {
-		this.pw = pw;
+    public PaymentPage(Product product, int quantity, String pw) {
+        this.pw = pw;
+        this.originalTotalAmount = product.getSalePrice() * quantity;
+        this.totalAmount = this.originalTotalAmount;
+
         setTitle("결제 페이지");
         setSize(800, 600); // 창 사이즈
         setLocationRelativeTo(null); // 창을 화면 중앙에 위치
@@ -72,9 +76,7 @@ public class PaymentPage extends JFrame {
         productPanel.setBorder(BorderFactory.createTitledBorder("주문상품"));
 
         // 여러 상품 추가(데이터 받아오기)
-        addProduct("상품 이미지1", "상품명1", 1, 1000);
-        addProduct("상품 이미지2", "상품명2", 2, 2000);
-        addProduct("상품 이미지3", "상품명3", 3, 3000);
+        addProduct(product.getImagePath(), product.getName(), quantity, product.getSalePrice());
 
         productScrollPane = new JScrollPane(productPanel);
         productScrollPane.setPreferredSize(new Dimension(700, 100)); // 스크롤 패널 크기 설정(상품이 몇 개 없을 경우 스크롤이 보이지 않음)
@@ -156,8 +158,8 @@ public class PaymentPage extends JFrame {
                 }
             }
         });
-		
-		setVisible(true);
+
+        setVisible(true);
     }
 
     public void addProduct(String imagePath, String name, int quantity, int price) { // 상품 추가
@@ -181,7 +183,7 @@ public class PaymentPage extends JFrame {
                 String[] parts = line.split(",");
                 if (parts.length >= 3 && parts[4].equals(pw)) { // 다섯 번째 항목이 pw라고 가정
                     return parts[3]; // 네 번째 항목이 주소라고 가정
-				}
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -193,8 +195,10 @@ public class PaymentPage extends JFrame {
         SwingUtilities.invokeLater(() -> {
             String pw = JOptionPane.showInputDialog(null, "비밀번호를 입력하세요:", "PW 입력", JOptionPane.PLAIN_MESSAGE);
             if (pw != null && !pw.isEmpty()) {
-                PaymentPage paymentPage = new PaymentPage(pw);
-			}
+                Product product = new Product("Sample Product", 10, 10000, 8000, "path/to/image.jpg");
+                int quantity = 2;
+                PaymentPage paymentPage = new PaymentPage(product, quantity, pw);
+            }
         });
     }
 }
