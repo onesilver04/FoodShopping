@@ -110,7 +110,7 @@ public class MembershipForm {
                 Member member = new Member(name, id, hashedPassword, address, birthdate, phoneNumber);
                 saveMemberToFile(member);
                 JOptionPane.showMessageDialog(panel, "가입 완료!");
-				nameField.setText("");
+                nameField.setText("");
                 idField.setText("");
                 passwordField.setText("");
                 addressField.setText("");
@@ -123,27 +123,16 @@ public class MembershipForm {
         return panel;
     }
 
-    public void setTabbedPane(JTabbedPane tabbedPane) {
-        this.tabbedPane = tabbedPane;
+    private boolean isValidInput(String name, String id, String password, String address, String birthdate, String phoneNumber) {
+        return !name.isEmpty() && !id.isEmpty() && !password.isEmpty() && !address.isEmpty() && !birthdate.isEmpty() && !phoneNumber.isEmpty();
     }
 
-    private void openLoginTab() {
-        if (tabbedPane != null) {
-            tabbedPane.setSelectedIndex(1); // 로그인 탭으로 이동
-        }
-    }
-
-    private static boolean isValidInput(String name, String id, String password, String address, String birthdate, String phoneNumber) {
-        return name != null && !name.isEmpty() && id != null && !id.isEmpty() && password != null && !password.isEmpty()
-                && address != null && !address.isEmpty() && birthdate != null && !birthdate.isEmpty() && phoneNumber != null && !phoneNumber.isEmpty();
-    }
-
-    private static boolean isIdDuplicated(String id, String name) {
+    private boolean isIdDuplicated(String id, String name) {
         try (BufferedReader br = new BufferedReader(new FileReader("members.txt"))) {
             String line;
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 2 && (parts[1].equals(id) || parts[0].equals(name))) {
+                String[] userInfo = line.split(",");
+                if (userInfo.length > 1 && userInfo[1].equals(id)) {
                     return true;
                 }
             }
@@ -152,29 +141,3 @@ public class MembershipForm {
         }
         return false;
     }
-
-    private static String hashPassword(String password) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            byte[] hashedBytes = md.digest(password.getBytes());
-            StringBuilder sb = new StringBuilder();
-            for (byte b : hashedBytes) {
-                sb.append(String.format("%02x", b));
-            }
-            return sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    private static void saveMemberToFile(Member member) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("members.txt", true))) {
-            bw.write(member.toCsvString());
-            bw.newLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}
-
