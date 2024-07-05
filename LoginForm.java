@@ -55,8 +55,14 @@ public class LoginForm {
 
                 if (CheckMember.validateLogin(id, password)) {
                     JOptionPane.showMessageDialog(panel, "로그인 성공!");
+					text.setText("");
+					value.setText("");
 					openMainTab();
-                    // 로그인 성공 시 추가 로직: 메인 페이지로 이동+로그인 정보 유지
+					
+                    // 로그인 성공 시 SessionManager를 통해 사용자 정보를 저장
+					Member loggedInUser = CheckMember.getMemberById(id);
+                    SessionManager.getInstance().login(loggedInUser);
+
 					openMainTab();
                 } else {
                     JOptionPane.showMessageDialog(panel, "로그인 실패! 아이디 또는 비밀번호를 확인해주세요.");
