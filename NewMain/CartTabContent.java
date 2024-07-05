@@ -1,12 +1,15 @@
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CartTabContent {
     private JPanel mainPanel;
@@ -14,8 +17,10 @@ public class CartTabContent {
     private JLabel orderAmountLabel;
     private JLabel discountLabel;
     private JLabel totalAmountLabel;
+    private JLabel finalAmountLabel; // 최종 금액 라벨 추가
     private JButton orderButton;
     private ProductDatabase productDB;
+    private List<JCheckBox> checkBoxes;
 
     public CartTabContent() {
         productDB = new ProductDatabase();
@@ -44,10 +49,13 @@ public class CartTabContent {
         discountLabel.setFont(new Font("맑은 고딕", Font.BOLD, 16));
         totalAmountLabel = new JLabel("결제예정금액: 0원");
         totalAmountLabel.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+        finalAmountLabel = new JLabel("최종금액: 0원"); // 최종 금액 라벨 초기화
+        finalAmountLabel.setFont(new Font("맑은 고딕", Font.BOLD, 16));
 
         summaryPanel.add(orderAmountLabel);
         summaryPanel.add(discountLabel);
         summaryPanel.add(totalAmountLabel);
+        summaryPanel.add(finalAmountLabel); // 최종 금액 라벨 추가
 
         orderButton = new JButton("주문하기");
         orderButton.setBackground(Color.RED);
@@ -57,19 +65,70 @@ public class CartTabContent {
 
         loadCartItems();
 
-        orderButton.addActionListener(e -> {
-            JOptionPane.showMessageDialog(mainPanel, "주문이 완료되었습니다.");
-            clearCart();
-            // 주문 완료 후 장바구니 비우기
-            cartPanel.removeAll();
-            updateSummaryPanel(0, 0, 0);
-            cartPanel.revalidate();
-            cartPanel.repaint();
-        });
+        orderButton.addActionListener(e -> handleOrder());
+
+        cartPanel.revalidate();
+        cartPanel.repaint();
+    }
+
+    private void handleOrder() {
+        Member currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            List<String> cartItems = currentUser.getCartItems();
+            List<String> selectedItems = cartItems.stream()
+                    .filter(item -> {
+                        String productName = item.split(",")[0];
+                        for (JCheckBox checkBox : checkBoxes) {
+                            if (checkBox.isSelected() && checkBox.getText().equals(productName)) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    })
+                    .collect(Collectors.toList());
+
+            if (selectedItems.isEmpty()) {
+                JOptionPane.showMessageDialog(mainPanel, "결제할 상품을 선택해주세요.");
+                return;
+            }
+
+            int totalOrderAmount = 0;
+            int totalDiscount = 0;
+            int totalAmount = 0;
+
+            for (String item : selectedItems) {
+                String[] parts = item.split(",");
+                String productName = parts[0];
+                int quantity = Integer.parseInt(parts[1]);
+
+                Product product = productDB.searchProductByName(productName);
+                if (product != null) {
+                    totalOrderAmount += product.getPrice() * quantity;
+                    totalDiscount += (product.getPrice() - product.getSalePrice()) * quantity;
+                    totalAmount += product.getSalePrice() * quantity;
+                }
+            }
+
+            JOptionPane.showMessageDialog(mainPanel, "주문이 완료되었습니다.\n주문금액: " + totalOrderAmount + "원\n상품할인: " + totalDiscount + "원\n결제예정금액: " + totalAmount + "원");
+
+            // 주문 완료 후 선택된 항목만 장바구니에서 제거
+            currentUser.getCartItems().removeAll(selectedItems);
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(currentUser.getId() + "_cart.txt"))) {
+                for (String item : currentUser.getCartItems()) {
+                    bw.write(item);
+                    bw.newLine();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            loadCartItems();
+        }
     }
 
     public void loadCartItems() {
         cartPanel.removeAll(); // 기존 패널 제거
+        checkBoxes = new ArrayList<>(); // 체크박스 목록 초기화
         Member currentUser = SessionManager.getInstance().getCurrentUser();
         if (currentUser != null) {
             List<String> cartItems = currentUser.getCartItems();
@@ -89,11 +148,13 @@ public class CartTabContent {
                     totalDiscount += (product.getPrice() - product.getSalePrice()) * quantity;
                     totalAmount += productTotal;
 
-                    cartPanel.add(createProductPanel(product, quantity));
+                    JPanel productPanel = createProductPanel(product, quantity);
+                    cartPanel.add(productPanel);
                 }
             }
 
             updateSummaryPanel(totalOrderAmount, totalDiscount, totalAmount);
+            updateFinalAmount(); // 최종 금액 업데이트
         } else {
             JOptionPane.showMessageDialog(mainPanel, "로그인이 필요합니다.");
         }
@@ -114,6 +175,9 @@ public class CartTabContent {
         leftPanel.setPreferredSize(new Dimension(120, 100)); // 이미지 패널 크기 조정
 
         JCheckBox checkBox = new JCheckBox();
+        checkBox.setText(product.getName()); // 체크박스에 상품명 설정
+        checkBox.addItemListener(e -> updateFinalAmount()); // 체크박스 상태 변경 리스너 추가
+        checkBoxes.add(checkBox); // 체크박스 목록에 추가
         leftPanel.add(checkBox, BorderLayout.NORTH);
 
         ImageIcon imageIcon = new ImageIcon(product.getImagePath());
@@ -160,6 +224,9 @@ public class CartTabContent {
                 if (quantity[0] > 0) {
                     quantity[0]--;
                     quantityField.setText(String.valueOf(quantity[0]));
+                    updateCartItem(product.getName(), quantity[0]);
+                    updateCartSummary();
+                    updateFinalAmount(); // 수량 변경 시 최종 금액 업데이트
                 }
             }
         });
@@ -173,6 +240,9 @@ public class CartTabContent {
                 if (quantity[0] < product.getStock()) {
                     quantity[0]++;
                     quantityField.setText(String.valueOf(quantity[0]));
+                    updateCartItem(product.getName(), quantity[0]);
+                    updateCartSummary();
+                    updateFinalAmount(); // 수량 변경 시 최종 금액 업데이트
                 } else {
                     JOptionPane.showMessageDialog(panel, "재고가 부족합니다.", "경고", JOptionPane.WARNING_MESSAGE);
                 }
@@ -193,6 +263,10 @@ public class CartTabContent {
         ImageIcon tscaledImageIcon = new ImageIcon(trashImage);
         JButton deleteButton = new JButton(tscaledImageIcon);
         deleteButton.setPreferredSize(new Dimension(20, 20));
+        deleteButton.addActionListener(e -> {
+            removeItemFromCart(product, panel);
+            updateFinalAmount(); // 삭제 시 최종 금액 업데이트
+        }); // 삭제 버튼 클릭 시 동작
 
         JPanel bottomRightPanel = new JPanel(new FlowLayout(FlowLayout.CENTER)); // 중앙으로 조정
         bottomRightPanel.add(deleteButton);
@@ -202,6 +276,111 @@ public class CartTabContent {
         panel.add(rightPanel, BorderLayout.EAST);
 
         return panel;
+    }
+
+    private void updateCartItem(String productName, int newQuantity) {
+        Member currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            List<String> cartItems = currentUser.getCartItems();
+            for (int i = 0; i < cartItems.size(); i++) {
+                String[] parts = cartItems.get(i).split(",");
+                if (parts[0].equals(productName)) {
+                    cartItems.set(i, productName + "," + newQuantity);
+                    break;
+                }
+            }
+
+            // 파일 업데이트
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(currentUser.getId() + "_cart.txt"))) {
+                for (String item : cartItems) {
+                    bw.write(item);
+                    bw.newLine();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void removeItemFromCart(Product product, JPanel panel) {
+        Member currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            String itemToRemove = product.getName();
+
+            // 세션에서 장바구니 항목 삭제
+            List<String> updatedCartItems = currentUser.getCartItems().stream()
+                    .filter(item -> !item.startsWith(itemToRemove + ","))
+                    .collect(Collectors.toList());
+            currentUser.getCartItems().clear();
+            currentUser.getCartItems().addAll(updatedCartItems);
+
+            // 파일에서 장바구니 항목 삭제
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(currentUser.getId() + "_cart.txt"))) {
+                for (String item : updatedCartItems) {
+                    bw.write(item);
+                    bw.newLine();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            // UI에서 패널 삭제
+            cartPanel.remove(panel);
+            cartPanel.revalidate();
+            cartPanel.repaint();
+
+            // 합계 업데이트
+            updateCartSummary();
+        }
+    }
+
+    private void updateCartSummary() {
+        Member currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            int totalOrderAmount = 0;
+            int totalDiscount = 0;
+            int totalAmount = 0;
+
+            for (String item : currentUser.getCartItems()) {
+                String[] parts = item.split(",");
+                String productName = parts[0];
+                int quantity = Integer.parseInt(parts[1]);
+
+                Product product = productDB.searchProductByName(productName);
+                if (product != null) {
+                    int productTotal = product.getSalePrice() * quantity;
+                    totalOrderAmount += product.getPrice() * quantity;
+                    totalDiscount += (product.getPrice() - product.getSalePrice()) * quantity;
+                    totalAmount += productTotal;
+                }
+            }
+
+            updateSummaryPanel(totalOrderAmount, totalDiscount, totalAmount);
+        }
+    }
+
+    private void updateFinalAmount() {
+        Member currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            int finalAmount = 0;
+
+            for (String item : currentUser.getCartItems()) {
+                String[] parts = item.split(",");
+                String productName = parts[0];
+                int quantity = Integer.parseInt(parts[1]);
+
+                for (JCheckBox checkBox : checkBoxes) {
+                    if (checkBox.isSelected() && checkBox.getText().equals(productName)) {
+                        Product product = productDB.searchProductByName(productName);
+                        if (product != null) {
+                            finalAmount += product.getSalePrice() * quantity;
+                        }
+                    }
+                }
+            }
+
+            finalAmountLabel.setText("최종금액: " + finalAmount + "원");
+        }
     }
 
     private void updateSummaryPanel(int orderAmount, int discount, int totalAmount) {
