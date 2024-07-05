@@ -4,6 +4,8 @@ import java.awt.event.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class ProductDetailPage {
     private JFrame f;
@@ -120,6 +122,20 @@ public class ProductDetailPage {
         buyNowButton.setForeground(Color.WHITE);
         buttonPanel.add(addToCartButton);
         buttonPanel.add(buyNowButton);
+		
+		// 바로 구매 버튼 이벤트 추가
+        buyNowButton.addActionListener(e -> {
+            if (SessionManager.getInstance().getCurrentUser() != null) {
+                if (quantity > 0) {
+                    new PaymentPage(product, quantity); // 비번 없이 PaymentPage 생성
+                    f.dispose(); // 현재 창 닫기
+                } else {
+                    JOptionPane.showMessageDialog(f, "수량을 선택해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
+                }
+            } else {
+                handleCartButton(); // 로그인되지 않은 상태라면 handleCartButton() 호출
+            }
+        });
 
         // 장바구니 버튼 이벤트 추가
         addToCartButton.addActionListener(e -> handleCartButton());
