@@ -141,3 +141,42 @@ public class MembershipForm {
         }
         return false;
     }
+
+    private String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(password.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hash) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void saveMemberToFile(Member member) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("members.txt", true))) {
+            bw.write(member.getName() + "," + member.getId() + "," + member.getPassword() + "," + member.getAddress() + "," + member.getBirthdate() + "," + member.getPhoneNumber());
+            bw.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void openLoginTab() {
+        if (tabbedPane != null) {
+            int index = tabbedPane.indexOfTab("로그인");
+            if (index != -1) {
+                tabbedPane.setSelectedIndex(index);
+            }
+        }
+    }
+
+    public void setTabbedPane(JTabbedPane tabbedPane) {
+        this.tabbedPane = tabbedPane;
+    }
+}
+
