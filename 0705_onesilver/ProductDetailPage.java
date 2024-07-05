@@ -1,3 +1,4 @@
+// 상품 상세 정보 페이지
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -92,7 +93,20 @@ public class ProductDetailPage {
         buyNowButton.setForeground(Color.WHITE);
         buttonPanel.add(addToCartButton);
         buttonPanel.add(buyNowButton);
-		//버튼 이벤트 추가하기
+	//버튼 이벤트 추가하기
+		
+	// 바로 구매 버튼 이벤트 추가
+        buyNowButton.addActionListener(e -> {
+            if (quantity > 0) {
+                String pw = JOptionPane.showInputDialog(f, "비밀번호를 입력하세요:", "비밀번호 확인", JOptionPane.PLAIN_MESSAGE);
+                if (pw != null && !pw.isEmpty()) {
+                    new PaymentPage(product, quantity, pw);
+                    f.dispose(); // 현재 창 닫기
+                }
+            } else {
+                JOptionPane.showMessageDialog(f, "수량을 선택해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
+            }
+        });
 
         contentPanel.add(infoPanel, BorderLayout.CENTER);
         contentPanel.add(buttonPanel, BorderLayout.SOUTH);
