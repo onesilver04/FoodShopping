@@ -7,20 +7,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Member {
+	private String name;
     private String id;
     private String password;
-    private String name;
-    private String email;
+	private String address;
     private String birthdate;  // 생일 필드 추가
     private String phoneNumber; // 폰 번호 필드 추가
     private List<String> cartItems; // 장바구니 항목 리스트
 
     // 생성자: Member 객체를 초기화합니다.
-    public Member(String id, String password, String name, String email, String birthdate, String phoneNumber) {
-        this.id = id;
-        this.password = password;
+    public Member(String name,String id, String password, String address, String birthdate, String phoneNumber) {
         this.name = name;
-        this.email = email;
+		this.id = id;
+        this.password = password;
+        this.address = address;
         this.birthdate = birthdate;
         this.phoneNumber = phoneNumber;
         this.cartItems = new ArrayList<>();
@@ -28,7 +28,15 @@ public class Member {
     }
 
     // Getter와 Setter 메서드
+	
+	public String getName() {
+        return name;
+    }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+	
     public String getId() {
         return id;
     }
@@ -44,21 +52,13 @@ public class Member {
     public void setPassword(String password) {
         this.password = password;
     }
-
-    public String getName() {
-        return name;
+	
+	public String getAddress() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getBirthdate() {
@@ -115,7 +115,7 @@ public class Member {
 
     // 회원 정보를 CSV 형식으로 반환
     public String toCsvString() {
-        return name + "," + id + "," + password + "," + email + "," + birthdate + "," + phoneNumber;
+        return name + "," + id + "," + password + "," + address + "," + birthdate + "," + phoneNumber;
     }
 
     // CSV 형식에서 Member 객체를 생성
