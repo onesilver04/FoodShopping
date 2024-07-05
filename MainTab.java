@@ -1,3 +1,4 @@
+// 메인 페이지의 '탭'들을 관리하는 클래스
 import javax.swing.*;
 import java.awt.*;
 
@@ -13,7 +14,7 @@ public class MainTab {
 
         jf.setSize(800, 600);
         jf.setLocationRelativeTo(null);
-        jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         jf.setVisible(true);
     }
 
@@ -32,7 +33,9 @@ public class MainTab {
         membershipForm.setTabbedPane(tabbedPane); // TabbedPane을 MembershipForm에 전달
         tabbedPane.addTab("회원가입", membershipForm.getMembershipPanel());
 
-        tabbedPane.addTab("마이페이지", new JPanel());
+		MyPage myPage = new MyPage();
+        myPage.setTabbedPane(tabbedPane); // TabbedPane을 MyPage에 전달
+        tabbedPane.addTab("마이페이지", myPage);
 
         CartTabContent cartTabContent = new CartTabContent();
         tabbedPane.addTab("장바구니", cartTabContent.getMainPanel());
@@ -47,4 +50,3 @@ public class MainTab {
         new MainTab("메인 화면");
     }
 }
-
