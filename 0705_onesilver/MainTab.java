@@ -1,5 +1,14 @@
+package main;
+
+
 // 메인 페이지의 '탭'들을 관리하는 클래스
 import javax.swing.*;
+
+import login.LoginForm;
+import login.LogoutPage;
+import login.MembershipForm;
+import mypage.MyPage;
+
 import java.awt.*;
 
 public class MainTab {
@@ -29,9 +38,9 @@ public class MainTab {
         loginForm.setTabbedPane(tabbedPane); // TabbedPane을 LoginForm에 전달
         tabbedPane.addTab("로그인", loginForm.getLoginPanel());
 
-        MembershipForm membershipForm = new MembershipForm();
+       /* MembershipForm membershipForm = new MembershipForm();
         membershipForm.setTabbedPane(tabbedPane); // TabbedPane을 MembershipForm에 전달
-        tabbedPane.addTab("회원가입", membershipForm.getMembershipPanel());
+        tabbedPane.addTab("회원가입", membershipForm.getMembershipPanel()); */
 
 		MyPage myPage = new MyPage();
         myPage.setTabbedPane(tabbedPane); // TabbedPane을 MyPage에 전달
