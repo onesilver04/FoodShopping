@@ -1,52 +1,85 @@
-// 메인 페이지의 '탭'들을 관리하는 클래스
+// '마이페이지' 구성하는 실제 코드
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class MainTab {
-    JFrame jf;
-    JTabbedPane tabbedPane;
+public class MyPage extends JPanel {
+	private JTabbedPane tabbedPane;
+    // 버튼 생성 및 추가
+    JButton btnEditInfo = new JButton("회원정보 수정하기");
+    JButton btnRechargePoints = new JButton("포인트 충전하러 가기~");
+    JButton btnCheckOrder = new JButton("주문 내역 확인");
 
-    public MainTab(String msg) {
-        jf = new JFrame(msg);
-        jf.setLayout(new BorderLayout());
+    JPanel mainPanel = new JPanel();
+    
+    Font koreanFont = new Font("Malgun Gothic", Font.PLAIN, 24); // 한글 폰트 설정
 
-        initComponents();
+    public MyPage() {
+        // 메인 패널 생성
+        mainPanel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(10, 10, 10, 10);
+        gbc.gridx = 0;
+        gbc.gridy = GridBagConstraints.RELATIVE;
 
-        jf.setSize(800, 600);
-        jf.setLocationRelativeTo(null);
-        //jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        jf.setVisible(true);
+        // 버튼 크기 조정
+        Dimension buttonSize = new Dimension(200, 50);
+        btnEditInfo.setPreferredSize(buttonSize);
+        btnRechargePoints.setPreferredSize(buttonSize);
+        btnCheckOrder.setPreferredSize(buttonSize);
+
+        mainPanel.add(btnEditInfo, gbc);
+        mainPanel.add(btnRechargePoints, gbc);
+        mainPanel.add(btnCheckOrder, gbc);
+
+        // 각 버튼에 이벤트 처리
+        btnEditInfo.addActionListener(new ActionListener() { // 회원정보 수정하기
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                openEditInfoPage();
+            }
+        });
+
+        btnRechargePoints.addActionListener(new ActionListener() { // 포인트 충전하러 가기
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                openRechargePointsPage();
+            }
+        });
+
+        btnCheckOrder.addActionListener(new ActionListener() { // 주문 내역 확인
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                openCheckOrderPage();
+            }
+        });
+
+        // 메인 패널을 현재 JPanel에 추가
+        this.setLayout(new BorderLayout());
+        this.add(mainPanel, BorderLayout.CENTER);
+		//return panel;
     }
 
-    private void initComponents() {
-        tabbedPane = new JTabbedPane();
-
-        // 각 탭의 내용을 별도의 클래스에서 가져와 추가
-        MainTabContent mainTabContent = new MainTabContent();
-        tabbedPane.addTab("메인", mainTabContent.getMainPanel());
-
-        LoginForm loginForm = new LoginForm();
-        loginForm.setTabbedPane(tabbedPane); // TabbedPane을 LoginForm에 전달
-        tabbedPane.addTab("로그인", loginForm.getLoginPanel());
-
-        MembershipForm membershipForm = new MembershipForm();
-        membershipForm.setTabbedPane(tabbedPane); // TabbedPane을 MembershipForm에 전달
-        tabbedPane.addTab("회원가입", membershipForm.getMembershipPanel());
-
-		MyPage myPage = new MyPage();
-        myPage.setTabbedPane(tabbedPane); // TabbedPane을 MyPage에 전달
-        tabbedPane.addTab("마이페이지", myPage);
-
-//        CartTabContent cartTabContent = new CartTabContent();
-//        tabbedPane.addTab("장바구니", cartTabContent.getMainPanel());
-        tabbedPane.addTab("배송 조회", new JPanel());
-        tabbedPane.addTab("이벤트", new JPanel());
-        tabbedPane.addTab("로그아웃", new JPanel());
-
-        jf.add(tabbedPane, BorderLayout.CENTER);
+	public void setTabbedPane(JTabbedPane tabbedPane) {
+        this.tabbedPane = tabbedPane;
     }
 
-    public static void main(String[] args) {
-        new MainTab("메인 화면");
+	// 페이지 전환 메소드
+    public void openEditInfoPage() {
+        JOptionPane.showMessageDialog(this, "회원정보 수정 페이지로 이동합니다.");
+        // 실제 페이지 전환 로직을 여기에 추가
+    }
+
+    public void openRechargePointsPage() {
+        // ok버튼 눌러서 이동하고 싶다면 아래 주석 추가
+        //JOptionPane.showMessageDialog(this, "포인트 충전 페이지로 이동합니다.");
+        this.setVisible(false); // 현재 창 숨기기
+        new RechargePointsPage(this); // 포인트 충전 페이지 열기
+    }
+
+    public void openCheckOrderPage() {
+        //JOptionPane.showMessageDialog(this, "주문 내역 확인 페이지로 이동합니다.");
+        // 실제 페이지 전환 로직을 여기에 추가
     }
 }
