@@ -1,7 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class ProductDetailPage {
     private JFrame f;
@@ -25,65 +25,87 @@ public class ProductDetailPage {
         f.add(contentPanel, BorderLayout.CENTER);
 
         ImageIcon imageIcon = new ImageIcon(product.getImagePath());
-        Image image = imageIcon.getImage().getScaledInstance(300, 300, Image.SCALE_SMOOTH);
+        Image image = imageIcon.getImage().getScaledInstance(450, 450, Image.SCALE_SMOOTH);
         imageIcon = new ImageIcon(image);
         JLabel imageLabel = new JLabel(imageIcon);
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         contentPanel.add(imageLabel, BorderLayout.WEST);
 
-        JPanel infoPanel = new JPanel(new GridLayout(7, 1));
-
-        JLabel nameLabel = new JLabel("상품명: " + product.getName());
-        infoPanel.add(nameLabel);
-
+        JPanel infoPanel = new JPanel(new GridBagLayout());
+		GridBagConstraints gbc = new GridBagConstraints();
+		gbc.insets = new Insets(5, 5, 5, 5); // 컴포넌트 간의 간격을 설정합니다.
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+		
+        JLabel nameLabel = new JLabel(product.getName());
+		nameLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 20));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        infoPanel.add(nameLabel, gbc);
+		
         JLabel stockLabel = new JLabel("재고: " + product.getStock());
-        infoPanel.add(stockLabel);
+		gbc.gridy++;
+        infoPanel.add(stockLabel, gbc);
 
         JLabel priceLabel = new JLabel("상품 가격: " + product.getPrice() + "원");
-        infoPanel.add(priceLabel);
+		gbc.gridy++;
+        infoPanel.add(priceLabel, gbc);
+		
+		JLabel salePriceLabel = new JLabel("할인 가격: " + product.getSalePrice() + "원");
+		gbc.gridy++;
+        infoPanel.add(salePriceLabel, gbc);
 
         JPanel quantityPanel = new JPanel(new FlowLayout());
 
-        Font buttonFont = new Font("Malgun Gothic", Font.BOLD, 20);
+        Font labelFont = new Font("맑은 고딕", Font.BOLD,20);
 
-        JButton decreaseButton = new JButton("-");
-        decreaseButton.setFont(buttonFont);
-        decreaseButton.addActionListener(e -> {
-            if (quantity > 0) {
-                quantity--;
-                quantityField.setText(String.valueOf(quantity));
-                updateTotalLabel();
+        JLabel decreaseButton = new JLabel("-");
+        decreaseButton.setFont(labelFont);
+		decreaseButton.setPreferredSize(new Dimension(25, 25));
+        decreaseButton.setHorizontalAlignment(SwingConstants.CENTER);
+        decreaseButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (quantity > 0) {
+                    quantity--;
+                    quantityField.setText(String.valueOf(quantity));
+                    updateTotalLabel();
+                }
             }
         });
         quantityPanel.add(decreaseButton);
 
-        quantityField = new JTextField(String.valueOf(quantity), 5);
+        quantityField = new JTextField(String.valueOf(quantity), 7);
         quantityField.setHorizontalAlignment(JTextField.CENTER);
         quantityField.setEditable(false); // 사용자가 입력하지 못하도록 비활성화
         quantityPanel.add(quantityField);
 
-        JButton increaseButton = new JButton("+");
-        increaseButton.setFont(buttonFont);
-        increaseButton.addActionListener(e -> {
-             if (quantity < product.getStock()) {
-                quantity++;
-                quantityField.setText(String.valueOf(quantity));
-                updateTotalLabel();
-            } else {
-                JOptionPane.showMessageDialog(f, "재고가 부족합니다.", "경고", JOptionPane.WARNING_MESSAGE);
+        JLabel increaseButton = new JLabel("+");
+        increaseButton.setFont(labelFont);
+		increaseButton.setPreferredSize(new Dimension(25, 25));
+        increaseButton.setHorizontalAlignment(SwingConstants.CENTER);
+        increaseButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (quantity < product.getStock()) {
+                    quantity++;
+                    quantityField.setText(String.valueOf(quantity));
+                    updateTotalLabel();
+                } else {
+                    JOptionPane.showMessageDialog(f, "재고가 부족합니다.", "경고", JOptionPane.WARNING_MESSAGE);
+                }
             }
         });
         quantityPanel.add(increaseButton);
-
-        infoPanel.add(quantityPanel);
-
-        JLabel salePriceLabel = new JLabel("할인 가격: " + product.getSalePrice() + "원");
-        infoPanel.add(salePriceLabel);
+		
+		gbc.gridy++;
+        infoPanel.add(quantityPanel, gbc);
 
         totalLabel = new JLabel("합계: " + product.getSalePrice() * quantity + "원");
-        infoPanel.add(totalLabel);
+		gbc.gridy++;
+        infoPanel.add(totalLabel, gbc);
 
-        JPanel buttonPanel = new JPanel();
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton addToCartButton = new JButton("장바구니 담기");
         addToCartButton.setBackground(Color.BLACK);
         addToCartButton.setForeground(Color.WHITE);
@@ -93,11 +115,13 @@ public class ProductDetailPage {
         buttonPanel.add(addToCartButton);
         buttonPanel.add(buyNowButton);
 		//버튼 이벤트 추가하기
+		
+		gbc.gridy++;
+        gbc.anchor = GridBagConstraints.EAST;
+        infoPanel.add(buttonPanel, gbc);
 
         contentPanel.add(infoPanel, BorderLayout.CENTER);
-        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
         f.setVisible(true);
     }
 
