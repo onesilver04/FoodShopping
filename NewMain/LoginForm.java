@@ -50,6 +50,13 @@ public class LoginForm {
         loginButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (SessionManager.getInstance().isLoggedIn()) {
+                    JOptionPane.showMessageDialog(panel, "이미 로그인 되어 있습니다.");
+					idField.setText("");
+                    passwordField.setText("");
+                    return;
+                }
+                
                 String id = idField.getText();
                 String password = new String(passwordField.getPassword());
 
@@ -57,7 +64,7 @@ public class LoginForm {
                     JOptionPane.showMessageDialog(panel, "로그인 성공!");
                     idField.setText("");
                     passwordField.setText("");
-                    
+
                     // 로그인 성공 시 SessionManager를 통해 사용자 정보를 저장
                     Member loggedInUser = CheckMember.getMemberById(id);
                     SessionManager.getInstance().login(loggedInUser);
@@ -104,3 +111,4 @@ public class LoginForm {
         frame.setVisible(true);
     }
 }
+
