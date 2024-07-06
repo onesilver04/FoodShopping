@@ -33,8 +33,10 @@ public class MainTab {
         MembershipForm membershipForm = new MembershipForm();
         membershipForm.setTabbedPane(tabbedPane); // TabbedPane을 MembershipForm에 전달
         tabbedPane.addTab("회원가입", membershipForm.getMembershipPanel());
-
-        tabbedPane.addTab("마이페이지", new JPanel());
+      
+      MyPage myPage = new MyPage();
+        myPage.setTabbedPane(tabbedPane); // TabbedPane을 MyPage에 전달
+        tabbedPane.addTab("마이페이지", myPage);
 
         // 장바구니 탭은 빈 패널로 시작하고 선택 시 초기화
         JPanel emptyCartPanel = new JPanel();
@@ -42,7 +44,10 @@ public class MainTab {
 
         tabbedPane.addTab("배송 조회", new JPanel());
         tabbedPane.addTab("이벤트", new JPanel());
-        tabbedPane.addTab("로그아웃", new JPanel());
+		
+		LogoutPage logoutPage = new LogoutPage(tabbedPane);
+//        logoutPage.setTabbedPane(tabbedPane); // TabbedPane을 LoginForm에 전달
+        tabbedPane.addTab("로그아웃", logoutPage);
 
         tabbedPane.addChangeListener(new ChangeListener() {
             @Override
