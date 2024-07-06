@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class CartTabContent {
     private JPanel mainPanel;
@@ -91,10 +93,17 @@ public class CartTabContent {
                 JOptionPane.showMessageDialog(mainPanel, "결제할 상품을 선택해주세요.");
                 return;
             }
+			
+			List<Product> selectedProducts = new ArrayList<>();
+			List<Integer> selectedQuantities = new ArrayList<>();
 
             int totalOrderAmount = 0;
             int totalDiscount = 0;
             int totalAmount = 0;
+            int finalAmount = 0;
+
+//            Product selectedProduct = null;
+//            int selectedQuantity = 0;
 
             for (String item : selectedItems) {
                 String[] parts = item.split(",");
@@ -106,10 +115,18 @@ public class CartTabContent {
                     totalOrderAmount += product.getPrice() * quantity;
                     totalDiscount += (product.getPrice() - product.getSalePrice()) * quantity;
                     totalAmount += product.getSalePrice() * quantity;
+                    finalAmount += product.getSalePrice() * quantity;
+
+                    selectedProducts.add(product);
+					selectedQuantities.add(quantity);
                 }
             }
 
-            JOptionPane.showMessageDialog(mainPanel, "주문이 완료되었습니다.\n주문금액: " + totalOrderAmount + "원\n상품할인: " + totalDiscount + "원\n결제예정금액: " + totalAmount + "원");
+            if (!selectedProducts.isEmpty()) {
+            PaymentPage paymentPage = new PaymentPage(selectedProducts, selectedQuantities);
+            paymentPage.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            paymentPage.setVisible(true);
+			}
 
             // 주문 완료 후 선택된 항목만 장바구니에서 제거
             currentUser.getCartItems().removeAll(selectedItems);
@@ -405,4 +422,3 @@ public class CartTabContent {
         return mainPanel;
     }
 }
-
