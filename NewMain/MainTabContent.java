@@ -131,34 +131,38 @@ public class MainTabContent {
     }
     
     private JPanel createProductItemPanel(Product product) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
-        
-        ImageIcon imageIcon = new ImageIcon(product.getImagePath());
-        Image image = imageIcon.getImage();
-        Image newimg = image.getScaledInstance(150, 150, java.awt.Image.SCALE_SMOOTH);
-        imageIcon = new ImageIcon(newimg);
-        JLabel imageLabel = new JLabel(imageIcon);
-        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(imageLabel, BorderLayout.CENTER);
-        
-        JPanel infoPanel = new JPanel(new GridLayout(2, 1));
-        JLabel nameLabel = new JLabel(product.getName());
-        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        infoPanel.add(nameLabel);
-        
-        JLabel priceLabel = new JLabel("가격: " + product.getPrice());
-        priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        infoPanel.add(priceLabel);
-        
-        panel.add(infoPanel, BorderLayout.SOUTH);
-        
-        panel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                showProductDetail(product);
-            }
-        });
+    JPanel panel = new JPanel(new BorderLayout());
+    panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+    
+    ImageIcon imageIcon = new ImageIcon(product.getImagePath());
+    Image image = imageIcon.getImage();
+    Image newimg = image.getScaledInstance(150, 150, java.awt.Image.SCALE_SMOOTH);
+    imageIcon = new ImageIcon(newimg);
+    JLabel imageLabel = new JLabel(imageIcon);
+    imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    panel.add(imageLabel, BorderLayout.CENTER);
+    
+    JPanel infoPanel = new JPanel(new GridLayout(3, 1)); // 3 rows to include the sale price
+    JLabel nameLabel = new JLabel(product.getName());
+    nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    infoPanel.add(nameLabel);
+    
+    JLabel priceLabel = new JLabel("가격: " + product.getPrice());
+    priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    infoPanel.add(priceLabel);
+
+    JLabel salePriceLabel = new JLabel("할인가: " + product.getSalePrice());
+    salePriceLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    infoPanel.add(salePriceLabel);
+    
+    panel.add(infoPanel, BorderLayout.SOUTH);
+    
+    panel.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            showProductDetail(product);
+        }
+    });
         
         panel.setPreferredSize(new Dimension(200, 200));
         
