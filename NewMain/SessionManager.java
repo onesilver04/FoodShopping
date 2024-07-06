@@ -22,4 +22,8 @@ public class SessionManager {
     public Member getCurrentUser() {
         return currentUser;
     }
+	
+	public boolean isLoggedIn() {
+        return currentUser != null;
+    }
 }
