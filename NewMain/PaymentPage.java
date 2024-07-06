@@ -3,11 +3,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.List;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class PaymentPage extends JFrame {
     JLabel couponLabel, totalAmountLabel, totalAmountValue, productImageLabel, productLabel;
@@ -170,9 +168,17 @@ public class PaymentPage extends JFrame {
             if (point != null && !point.isEmpty()) {
                 try {
                     int pointValue = Integer.parseInt(point);
+                    int currentPoints = PointsManager.loadPoints(currentUser.getId());
+                    if (currentPoints < pointValue) {
+                        JOptionPane.showMessageDialog(PaymentPage.this, "포인트가 부족합니다.", "오류", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
                     totalAmount -= pointValue; // 총 금액에서 포인트 차감
                     if (totalAmount < 0) totalAmount = 0; // 총 금액이 0보다 작아지지 않도록 설정
                     totalAmountValue.setText(totalAmount + " ₩");
+                    
+                    currentPoints -= pointValue; // 사용자의 포인트 차감
+                    PointsManager.savePoints(currentUser.getId(), currentPoints); // 파일에 포인트 업데이트
                     JOptionPane.showMessageDialog(PaymentPage.this, "포인트 " + pointValue + "가 차감되었습니다.", "포인트 차감", JOptionPane.INFORMATION_MESSAGE); // 포인트 차감 알림창
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(PaymentPage.this, "유효한 숫자를 입력하세요.", "오류", JOptionPane.ERROR_MESSAGE); // 오류 알림 창
