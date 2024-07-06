@@ -16,6 +16,7 @@ public class PaymentPage extends JFrame {
     JTextArea addressTextArea;
     int totalAmount; // 할인 적용된 금액 예정
     int originalTotalAmount; // 총 금액 원본 저장(데이터 받아오기)
+    public static final String ORDERS_FILE = "orders.txt";
 
     // 여러 상품 처리 생성자
     public PaymentPage(List<Product> products, List<Integer> quantities) {
@@ -186,6 +187,12 @@ public class PaymentPage extends JFrame {
             }
         });
 
+        // 카드 결제 버튼 클릭 시 결제 내역 저장
+        cardButton.addActionListener(e -> {
+            saveOrderDetails(currentUser, products, quantities, totalAmount);
+            JOptionPane.showMessageDialog(PaymentPage.this, "결제가 완료되었습니다.", "결제 완료", JOptionPane.INFORMATION_MESSAGE);
+        });
+
         setVisible(true);
     }
 
@@ -207,5 +214,15 @@ public class PaymentPage extends JFrame {
 
     public JPanel getMainPanel() {
         return mainPanel;
+    }
+
+    private void saveOrderDetails(Member member, List<Product> products, List<Integer> quantities, int totalAmount) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(ORDERS_FILE, true))) {
+            for (int i = 0; i < products.size(); i++) {
+                writer.write(String.format("%s,%s,%d,%d,%d\n", member.getId(), products.get(i).getName(), quantities.get(i), products.get(i).getSalePrice(), totalAmount));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
