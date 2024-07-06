@@ -57,7 +57,9 @@ public class PaymentPage extends JFrame {
         addressPanel.setMaximumSize(new Dimension(800, 70));
 
         // 텍스트 파일에서 주소 읽기
-        String address = readAddress("C:/Users/SM-PC/Desktop/test/..._cart.txt"); // 파일 경로를 실제 경로로 변경
+        Member currentUser = SessionManager.getInstance().getCurrentUser();
+        String address = currentUser != null ? currentUser.getAddress() : "변경버튼을 눌러서 배송받을 주소를 입력해주세요";
+		
         addressTextArea = new JTextArea(address);
         addressTextArea.setEditable(false);
         addressTextArea.setLineWrap(true);
@@ -185,6 +187,9 @@ public class PaymentPage extends JFrame {
         productInfoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         productImageLabel = new JLabel();
         ImageIcon productImage = new ImageIcon(imagePath);
+		
+		Image image = productImage.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+        productImage = new ImageIcon(image);
 
         productImageLabel.setIcon(productImage);
         productInfoPanel.add(productImageLabel);
@@ -192,22 +197,6 @@ public class PaymentPage extends JFrame {
         productLabel = new JLabel(String.format("   %s   %d개   %d원", name, quantity, price));
         productInfoPanel.add(productLabel);
         productPanel.add(productInfoPanel); // 상품패널에 상품 정보 표기
-    }
-
-    public String readAddress(String filePath) { // txt파일에서 주소 정보 가져오기
-        StringBuilder address = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 3) { // 적절한 필드 수 체크
-                    return parts[3]; // 네 번째 항목이 주소라고 가정
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "변경버튼을 눌러서 배송받을 주소를 입력해주세요";
     }
 
     public JPanel getMainPanel() {
