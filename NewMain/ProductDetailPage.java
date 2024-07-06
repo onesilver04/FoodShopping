@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -127,7 +128,10 @@ public class ProductDetailPage {
         buyNowButton.addActionListener(e -> {
             if (SessionManager.getInstance().getCurrentUser() != null) {
                 if (quantity > 0) {
-                    new PaymentPage(product, quantity); // 비번 없이 PaymentPage 생성
+					JFrame paymentFrame = new PaymentPage(product, quantity);
+					paymentFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+					paymentFrame.setVisible(true);
+                    //new PaymentPage(product, quantity); // 비번 없이 PaymentPage 생성
                     f.dispose(); // 현재 창 닫기
                 } else {
                     JOptionPane.showMessageDialog(f, "수량을 선택해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
