@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -137,7 +136,7 @@ public class ProductDetailPage {
                     JOptionPane.showMessageDialog(f, "수량을 선택해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
                 }
             } else {
-                handleCartButton(); // 로그인되지 않은 상태라면 handleCartButton() 호출
+                 handleLoginAndPurchase(); // 로그인되지 않은 상태라면 handleLoginAndPurchase() 호출
             }
         });
 
@@ -165,6 +164,21 @@ public class ProductDetailPage {
             int result = JOptionPane.showConfirmDialog(f, "로그인이 필요합니다. 로그인하시겠습니까?", "로그인 필요", JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
                 showLoginDialog();
+            }
+        }
+    }
+	
+	private void handleLoginAndPurchase() {
+        int result = JOptionPane.showConfirmDialog(f, "로그인이 필요합니다. 로그인하시겠습니까?", "로그인 필요", JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            showLoginDialog();
+            if (SessionManager.getInstance().getCurrentUser() != null) { // 로그인 성공 시
+                if (quantity > 0) {
+                    new PaymentPage(product, quantity); // 비번 없이 PaymentPage 생성
+                    f.dispose(); // 현재 창 닫기
+                } else {
+                    JOptionPane.showMessageDialog(f, "수량을 선택해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
+                }
             }
         }
     }
@@ -225,7 +239,6 @@ public class ProductDetailPage {
                 Member loggedInUser = CheckMember.getMemberById(id);
                 SessionManager.getInstance().login(loggedInUser);
                 loginDialog.dispose();
-                addToCart();
             } else {
                 JOptionPane.showMessageDialog(loginDialog, "로그인 실패! 아이디 또는 비밀번호를 확인해주세요.");
             }
