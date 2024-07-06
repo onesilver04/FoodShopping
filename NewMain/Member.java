@@ -7,36 +7,33 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Member {
-	private String name;
+    private String name;
     private String id;
     private String password;
-	private String address;
-    private String birthdate;  // 생일 필드 추가
-    private String phoneNumber; // 폰 번호 필드 추가
-    private List<String> cartItems; // 장바구니 항목 리스트
+    private String address;
+    private String birthdate;
+    private String phoneNumber;
+    private List<String> cartItems;
 
-    // 생성자: Member 객체를 초기화합니다.
-    public Member(String name,String id, String password, String address, String birthdate, String phoneNumber) {
+    public Member(String name, String id, String password, String address, String birthdate, String phoneNumber) {
         this.name = name;
-		this.id = id;
+        this.id = id;
         this.password = password;
         this.address = address;
         this.birthdate = birthdate;
         this.phoneNumber = phoneNumber;
         this.cartItems = new ArrayList<>();
-        loadCartFromFile(); // 파일에서 장바구니 항목을 로드합니다.
+        loadCartFromFile();  // Member 객체 생성 시 장바구니 파일을 읽어옴
     }
 
-    // Getter와 Setter 메서드
-	
-	public String getName() {
+    public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
-	
+
     public String getId() {
         return id;
     }
@@ -52,9 +49,9 @@ public class Member {
     public void setPassword(String password) {
         this.password = password;
     }
-	
-	public String getAddress() {
-        return id;
+
+    public String getAddress() {
+        return address;
     }
 
     public void setAddress(String address) {
@@ -77,18 +74,15 @@ public class Member {
         this.phoneNumber = phoneNumber;
     }
 
-    // 장바구니 항목 리스트를 반환합니다.
     public List<String> getCartItems() {
         return cartItems;
     }
 
-    // 장바구니에 항목 추가
     public void addToCart(String productName, int quantity) {
         cartItems.add(productName + "," + quantity);
-        saveCartToFile(); // 장바구니를 파일에 저장합니다.
+        saveCartToFile();
     }
 
-    // 장바구니를 파일에 저장
     public void saveCartToFile() {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(id + "_cart.txt", true))) {
             for (String item : cartItems) {
@@ -100,9 +94,8 @@ public class Member {
         }
     }
 
-    // 파일에서 장바구니 항목 로드
     public void loadCartFromFile() {
-        cartItems.clear(); // 기존 장바구니 항목을 비웁니다.
+        cartItems.clear();
         try (BufferedReader br = new BufferedReader(new FileReader(id + "_cart.txt"))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -113,14 +106,12 @@ public class Member {
         }
     }
 
-    // 회원 정보를 CSV 형식으로 반환
     public String toCsvString() {
         return name + "," + id + "," + password + "," + address + "," + birthdate + "," + phoneNumber;
     }
 
-    // CSV 형식에서 Member 객체를 생성
     public static Member fromCsvString(String csv) {
         String[] parts = csv.split(",");
-        return new Member(parts[1], parts[2], parts[0], parts[3], parts[4], parts[5]);
+        return new Member(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5]);
     }
 }
