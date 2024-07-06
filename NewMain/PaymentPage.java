@@ -6,25 +6,44 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
+import java.util.ArrayList;
 
 public class PaymentPage extends JFrame {
     JLabel couponLabel, totalAmountLabel, totalAmountValue, productImageLabel, productLabel;
     JButton pointButton, cardButton, kakaoPayButton, bankTransferButton, changeAddressButton;
     JComboBox<String> couponComboBox;
     JPanel productPanel, mainPanel, addressPanel, couponPanel, paymentPanel, totalAmountPanel, buttonPanel, productInfoPanel;
-    ImageIcon productImage;
     JScrollPane productScrollPane;
     JTextArea addressTextArea;
     int totalAmount; // 할인 적용된 금액 예정
     int originalTotalAmount; // 총 금액 원본 저장(데이터 받아오기)
 
-    public PaymentPage(Product product, int quantity) {
-        this.originalTotalAmount = product.getSalePrice() * quantity;
-        this.totalAmount = this.originalTotalAmount;
+    // 여러 상품 처리 생성자
+    public PaymentPage(List<Product> products, List<Integer> quantities) {
+        initialize(products, quantities);
+    }
 
+    // 단일 상품 처리 생성자
+    public PaymentPage(Product product, int quantity) {
+        List<Product> products = new ArrayList<>();
+        List<Integer> quantities = new ArrayList<>();
+        products.add(product);
+        quantities.add(quantity);
+        initialize(products, quantities);
+    }
+
+    private void initialize(List<Product> products, List<Integer> quantities) {
         setTitle("결제 페이지");
         setSize(800, 600); // 창 사이즈
         setLocationRelativeTo(null); // 창을 화면 중앙에 위치
+
+        originalTotalAmount = 0;
+        totalAmount = 0;
+        for (int i = 0; i < products.size(); i++) {
+            originalTotalAmount += products.get(i).getSalePrice() * quantities.get(i);
+            totalAmount += products.get(i).getSalePrice() * quantities.get(i);
+        }
 
         // 메인 패널 설정
         mainPanel = new JPanel();
@@ -38,7 +57,7 @@ public class PaymentPage extends JFrame {
         addressPanel.setMaximumSize(new Dimension(800, 70));
 
         // 텍스트 파일에서 주소 읽기
-        String address = readAddress("C:/Users/SM-PC/Desktop/test/members.txt"); // 파일 경로를 실제 경로로 변경
+        String address = readAddress("C:/Users/SM-PC/Desktop/test/..._cart.txt"); // 파일 경로를 실제 경로로 변경
         addressTextArea = new JTextArea(address);
         addressTextArea.setEditable(false);
         addressTextArea.setLineWrap(true);
@@ -73,8 +92,10 @@ public class PaymentPage extends JFrame {
         productPanel.setLayout(new BoxLayout(productPanel, BoxLayout.Y_AXIS));
         productPanel.setBorder(BorderFactory.createTitledBorder("주문상품"));
 
-        // 여러 상품 추가(데이터 받아오기)
-        addProduct(product.getImagePath(), product.getName(), quantity, product.getSalePrice());
+        // 여러 상품 추가
+        for (int i = 0; i < products.size(); i++) {
+            addProduct(products.get(i).getImagePath(), products.get(i).getName(), quantities.get(i), products.get(i).getSalePrice());
+        }
 
         productScrollPane = new JScrollPane(productPanel);
         productScrollPane.setPreferredSize(new Dimension(700, 100)); // 스크롤 패널 크기 설정(상품이 몇 개 없을 경우 스크롤이 보이지 않음)
@@ -163,7 +184,7 @@ public class PaymentPage extends JFrame {
     public void addProduct(String imagePath, String name, int quantity, int price) { // 상품 추가
         productInfoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         productImageLabel = new JLabel();
-        productImage = new ImageIcon(imagePath);
+        ImageIcon productImage = new ImageIcon(imagePath);
 
         productImageLabel.setIcon(productImage);
         productInfoPanel.add(productImageLabel);
@@ -187,5 +208,9 @@ public class PaymentPage extends JFrame {
             e.printStackTrace();
         }
         return "변경버튼을 눌러서 배송받을 주소를 입력해주세요";
+    }
+
+    public JPanel getMainPanel() {
+        return mainPanel;
     }
 }
