@@ -1,10 +1,18 @@
 // 주문 내역 확인 코드
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.table.TableColumn; // 열 너비 조정용
-import javax.swing.table.TableCellRenderer; // 텍스트 줄바꿈용
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 public class OrderHistoryPage extends JFrame {
+    private static final String ORDERS_FILE = "orders.txt";
+
     public OrderHistoryPage(MyPage mainPage) {
         setTitle("Order History_Check Order");
         setSize(800, 600);
@@ -14,41 +22,39 @@ public class OrderHistoryPage extends JFrame {
         JPanel panel = new JPanel(new BorderLayout());
 
         // 표 데이터 생성
-        String columnName[] = {"대표 상품 이미지", "주문 내역"};
-        Object[][] data = {
-            {new ImageIcon("C:/Users/SM-PC/Desktop/OPPcode/Images/sm_logo.png"), "주문 상품 1\n주문 날짜 1\n총액 1"},
-            {new ImageIcon("path/to/image2.jpg"), "주문 상품 2\n주문 날짜 2\n총액 2"},
-            {new ImageIcon("path/to/image3.jpg"), "주문 상품 3\n주문 날짜 3\n총액 3"},
-            {new ImageIcon("path/to/image4.jpg"), "주문 상품 4\n주문 날짜 4\n총액 4"},
-			{new ImageIcon("path/to/image5.jpg"), "주문 상품 5\n주문 날짜 5\n총액 5"}
-        };
-
-        // JTable 생성
-        JTable table = new JTable(data, columnName) {
-            // 모든 셀을 수정 불가능하도록 설정
+        String[] columnNames = {"대표 상품 이미지", "주문 내역"};
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+        JTable table = new JTable(model) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
-			
-			// 각 셀에 대한 렌더러 설정(이미지, 문자열을 따로 인식하기 위함)
+
             @Override
             public Class<?> getColumnClass(int column) {
                 return getValueAt(0, column).getClass();
             }
-			
         };
-        
-		// 텍스트 줄바꿈을 위해 셀 렌더러 설정
+
+        Member currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser != null) {
+            List<String[]> orderHistory = loadOrderHistory(currentUser.getId());
+            for (String[] order : orderHistory) {
+                model.addRow(order);
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "로그인이 필요합니다.", "오류", JOptionPane.ERROR_MESSAGE);
+        }
+
         table.getColumnModel().getColumn(1).setCellRenderer(new TextAreaRenderer());
-		
+
         // 테이블 크기 및 속성 설정
-		table.setFont(new Font("Malgun Gothic", Font.PLAIN, 20)); // table 텍스트
+        table.setFont(new Font("Malgun Gothic", Font.PLAIN, 20)); // table 텍스트
         table.setPreferredScrollableViewportSize(new Dimension(600, 400));
         table.setRowHeight(160); // 각 셀의 높이
-		
-		// 열 너비 설정
-		TableColumn imageColumn = table.getColumnModel().getColumn(0);
+
+        // 열 너비 설정
+        TableColumn imageColumn = table.getColumnModel().getColumn(0);
         imageColumn.setPreferredWidth(100);
         TableColumn textColumn = table.getColumnModel().getColumn(1);
         textColumn.setPreferredWidth(500);
@@ -75,8 +81,29 @@ public class OrderHistoryPage extends JFrame {
         add(panel);
         setVisible(true);
     }
-	
-	// 내부 클래스 TextAreaRenderer
+
+    private List<String[]> loadOrderHistory(String memberId) {
+        List<String[]> orderHistory = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(ORDERS_FILE))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.startsWith(memberId + ",")) {
+                    String[] parts = line.split(",");
+                    if (parts.length >= 5) {
+                        String imagePath = "path/to/default/image.jpg"; // 기본 이미지 경로 설정
+                        String orderDetails = String.format("상품명: %s\n수량: %s\n가격: %s\n총 결제 금액: %s",
+                                parts[1], parts[2], parts[3], parts[4]);
+                        orderHistory.add(new String[]{imagePath, orderDetails});
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return orderHistory;
+    }
+
+    // 내부 클래스 TextAreaRenderer
     class TextAreaRenderer extends JTextArea implements TableCellRenderer {
         public TextAreaRenderer() {
             setLineWrap(true);
@@ -90,5 +117,5 @@ public class OrderHistoryPage extends JFrame {
             setFont(new Font("Malgun Gothic", Font.PLAIN, 20)); // table 텍스트
             return this;
         }
-	}
+    }
 }
