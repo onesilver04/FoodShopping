@@ -1,4 +1,3 @@
-// 주문 내역 확인 코드
 import javax.swing.*;
 import java.awt.*;
 import java.io.BufferedReader;
@@ -12,11 +11,20 @@ import javax.swing.table.TableColumn;
 
 public class OrderHistoryPage extends JFrame {
     private static final String ORDERS_FILE = "orders.txt";
+    private ProductDatabase productDatabase;
 
     public OrderHistoryPage(MyPage mainPage) {
+        Member currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            JOptionPane.showMessageDialog(null, "로그인이 필요합니다.", "오류", JOptionPane.ERROR_MESSAGE);
+            return; // 창을 열지 않음
+        }
+
         setTitle("Order History_Check Order");
         setSize(800, 600);
         setLocationRelativeTo(null); // 화면 중앙에 위치
+
+        productDatabase = new ProductDatabase(); // ProductDatabase 초기화
 
         // 패널 설정
         JPanel panel = new JPanel(new BorderLayout());
@@ -32,18 +40,17 @@ public class OrderHistoryPage extends JFrame {
 
             @Override
             public Class<?> getColumnClass(int column) {
-                return getValueAt(0, column).getClass();
+                if (column == 0) {
+                    return ImageIcon.class;
+                } else {
+                    return String.class;
+                }
             }
         };
 
-        Member currentUser = SessionManager.getInstance().getCurrentUser();
-        if (currentUser != null) {
-            List<String[]> orderHistory = loadOrderHistory(currentUser.getId());
-            for (String[] order : orderHistory) {
-                model.addRow(order);
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "로그인이 필요합니다.", "오류", JOptionPane.ERROR_MESSAGE);
+        List<Object[]> orderHistory = loadOrderHistory(currentUser.getId());
+        for (Object[] order : orderHistory) {
+            model.addRow(order);
         }
 
         table.getColumnModel().getColumn(1).setCellRenderer(new TextAreaRenderer());
@@ -82,18 +89,21 @@ public class OrderHistoryPage extends JFrame {
         setVisible(true);
     }
 
-    private List<String[]> loadOrderHistory(String memberId) {
-        List<String[]> orderHistory = new ArrayList<>();
+    private List<Object[]> loadOrderHistory(String memberId) {
+        List<Object[]> orderHistory = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(ORDERS_FILE))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith(memberId + ",")) {
                     String[] parts = line.split(",");
                     if (parts.length >= 5) {
-                        String imagePath = "path/to/default/image.jpg"; // 기본 이미지 경로 설정
+                        String productName = parts[1];
+                        Product product = productDatabase.searchProductByName(productName);
+                        String imagePath = (product != null) ? product.getImagePath().replace("\\", "/") : "images/null.png";
+                        ImageIcon imageIcon = resizeImageIcon(new ImageIcon(imagePath), 170, 170); // 이미지 크기 조정
                         String orderDetails = String.format("상품명: %s\n수량: %s\n가격: %s\n총 결제 금액: %s",
                                 parts[1], parts[2], parts[3], parts[4]);
-                        orderHistory.add(new String[]{imagePath, orderDetails});
+                        orderHistory.add(new Object[]{imageIcon, orderDetails});
                     }
                 }
             }
@@ -101,6 +111,13 @@ public class OrderHistoryPage extends JFrame {
             e.printStackTrace();
         }
         return orderHistory;
+    }
+
+    // 이미지 크기 조정 메서드
+    private ImageIcon resizeImageIcon(ImageIcon imageIcon, int width, int height) {
+        Image image = imageIcon.getImage();
+        Image resizedImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        return new ImageIcon(resizedImage);
     }
 
     // 내부 클래스 TextAreaRenderer
@@ -117,5 +134,10 @@ public class OrderHistoryPage extends JFrame {
             setFont(new Font("Malgun Gothic", Font.PLAIN, 20)); // table 텍스트
             return this;
         }
+    }
+
+    public static void main(String[] args) {
+        // 이 부분은 테스트를 위해 필요한 클래스와 메서드를 포함합니다.
+        new OrderHistoryPage(new MyPage());
     }
 }
