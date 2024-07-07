@@ -99,7 +99,7 @@ public class OrderHistoryPage extends JFrame {
                     if (parts.length >= 5) {
                         String productName = parts[1];
                         Product product = productDatabase.searchProductByName(productName);
-                        String imagePath = (product != null) ? product.getImagePath().replace("\\", "/") : "images/null.png";
+                        String imagePath = (product != null) ? product.getImagePath().replace("\\", "/") : "images/null.png";  // : 뒤에 널 이미지 경로 넣기
                         ImageIcon imageIcon = resizeImageIcon(new ImageIcon(imagePath), 170, 170); // 이미지 크기 조정
                         String orderDetails = String.format("상품명: %s\n수량: %s\n가격: %s\n총 결제 금액: %s",
                                 parts[1], parts[2], parts[3], parts[4]);
