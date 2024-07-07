@@ -1,19 +1,18 @@
-// '마이페이지' 구성하는 실제 코드
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MyPage extends JPanel {
-	private JTabbedPane tabbedPane;
-	
+    private JTabbedPane tabbedPane;
+
     // 버튼 생성 및 추가
     JButton btnEditInfo = new JButton("회원정보 수정하기");
     JButton btnRechargePoints = new JButton("포인트 충전하러 가기~");
     JButton btnOrderHistory = new JButton("주문 내역 확인");
 
     JPanel mainPanel = new JPanel();
-    
+
     Font koreanFont = new Font("Malgun Gothic", Font.PLAIN, 24); // 한글 폰트 설정
 
     public MyPage() {
@@ -61,11 +60,11 @@ public class MyPage extends JPanel {
         this.add(mainPanel, BorderLayout.CENTER);
     }
 
-	public void setTabbedPane(JTabbedPane tabbedPane) {
+    public void setTabbedPane(JTabbedPane tabbedPane) {
         this.tabbedPane = tabbedPane;
     }
 
-	// 페이지 전환 메소드
+    // 페이지 전환 메소드
     public void openEditInfoPage() {
         JOptionPane.showMessageDialog(this, "회원정보 수정 페이지로 이동합니다.");
         // 실제 페이지 전환 로직을 여기에 추가
@@ -82,6 +81,6 @@ public class MyPage extends JPanel {
         //JOptionPane.showMessageDialog(this, "주문 내역 확인 페이지로 이동합니다.");
         // 실제 페이지 전환 로직을 여기에 추가
         this.setVisible(false); // 현재 창 숨기기
-        new OrderHistoryPage(this); // 포인트 충전 페이지 열기
-	}
+        new OrderHistoryPage(this); // 주문 내역 페이지 열기
+    }
 }
