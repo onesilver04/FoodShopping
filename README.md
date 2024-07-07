@@ -3,11 +3,13 @@
 # 🍉 Food Shopping Mall 🛒
 
 </div>
+
 ## 👋 소개 
 
 JAVA를 이용해서 식료품 구매 사이트를 구현한 프로젝트 🍧 <br>
 
 ## 👥 팀원 소개
+|<img src="https://github.com/onesilver04.png" width="80">|<img src="https://github.com/jchaerry.png" width="80">|<img src="https://github.com/ssse0y.png" width="80">|
 
 |:---|:---|:---|
 |[](https://github.com/onesilver04)|[](https://github.com/jchaerry)|[](https://github.com/ssse0y)|
