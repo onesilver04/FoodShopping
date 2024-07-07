@@ -12,7 +12,9 @@ JAVA를 이용해서 식료품 구매 사이트를 구현한 프로젝트 🍧 <
 |<img src="https://github.com/onesilver04.png" width="80">|<img src="https://github.com/jchaerry.png" width="80">|<img src="https://github.com/ssse0y.png" width="80">|
 
 |:---|:---|:---|
+
 |[](https://github.com/onesilver04)|[](https://github.com/jchaerry)|[](https://github.com/ssse0y)|
+
 |백엔드|백엔드|프론트엔드|
 
 ## 🌳 사용 방법
