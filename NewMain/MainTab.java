@@ -34,7 +34,7 @@ public class MainTab {
         membershipForm.setTabbedPane(tabbedPane); // TabbedPane을 MembershipForm에 전달
         tabbedPane.addTab("회원가입", membershipForm.getMembershipPanel());
       
-      MyPage myPage = new MyPage();
+        MyPage myPage = new MyPage();
         myPage.setTabbedPane(tabbedPane); // TabbedPane을 MyPage에 전달
         tabbedPane.addTab("마이페이지", myPage);
 
@@ -43,10 +43,11 @@ public class MainTab {
         tabbedPane.addTab("장바구니", emptyCartPanel);
 
         tabbedPane.addTab("배송 조회", new JPanel());
-        tabbedPane.addTab("이벤트", new JPanel());
+		
+		JPanel eventPagePanel = EventPage.createEventPage();
+        tabbedPane.addTab("이벤트", eventPagePanel);
 		
 		LogoutPage logoutPage = new LogoutPage(tabbedPane);
-//        logoutPage.setTabbedPane(tabbedPane); // TabbedPane을 LoginForm에 전달
         tabbedPane.addTab("로그아웃", logoutPage);
 
         tabbedPane.addChangeListener(new ChangeListener() {
@@ -65,9 +66,5 @@ public class MainTab {
         });
 
         jf.add(tabbedPane, BorderLayout.CENTER);
-    }
-
-    public static void main(String[] args) {
-        new MainTab("메인 화면");
     }
 }
