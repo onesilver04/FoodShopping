@@ -1,9 +1,12 @@
+// 회원가입
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.regex.*;
+
 
 public class MembershipForm {
     private JTabbedPane tabbedPane;
@@ -86,7 +89,7 @@ public class MembershipForm {
         gbc.anchor = GridBagConstraints.CENTER; // 버튼을 중앙 정렬
         panel.add(registerButton, gbc);
 
-        registerButton.addActionListener(new ActionListener() {
+        registerButton.addActionListener(new ActionListener() { // 가입하기 버튼 이벤트 처리
             @Override
             public void actionPerformed(ActionEvent e) {
                 String name = nameField.getText();
@@ -97,11 +100,16 @@ public class MembershipForm {
                 String phoneNumber = pNumberField.getText();
 
                 if (!isValidInput(name, id, password, address, birthdate, phoneNumber)) {
-                    JOptionPane.showMessageDialog(panel, "입력이 유효하지 않습니다!");
+                    //JOptionPane.showMessageDialog(panel, "입력이 유효하지 않습니다!");
+                    return;
+                }
+				
+				if (isUnderage(birthdate)) { // 미성년자 확인
+                    JOptionPane.showMessageDialog(panel, "미성년자는 가입할 수 없습니다!");
                     return;
                 }
 
-                if (isIdDuplicated(id, name)) {
+                if (isIdDuplicated(id, name)) { // 중복된 아이디일 경우
                     JOptionPane.showMessageDialog(panel, "이미 존재하는 아이디입니다!");
                     return;
                 }
@@ -124,7 +132,32 @@ public class MembershipForm {
     }
 
     private boolean isValidInput(String name, String id, String password, String address, String birthdate, String phoneNumber) {
-        return !name.isEmpty() && !id.isEmpty() && !password.isEmpty() && !address.isEmpty() && !birthdate.isEmpty() && !phoneNumber.isEmpty();
+        if (name.isEmpty() || id.isEmpty() || password.isEmpty() || address.isEmpty() || birthdate.isEmpty() || phoneNumber.isEmpty()) {
+            return false;
+        }
+
+        if (!phoneNumber.matches("^010-\\d{4}-\\d{4}$")) {
+            JOptionPane.showMessageDialog(null, "전화번호는 010-xxxx-xxxx 형식이어야 합니다.");
+            return false;
+        }
+
+        if (!birthdate.matches("^\\d{4}\\.\\d{2}\\.\\d{2}$")) {
+            JOptionPane.showMessageDialog(null, "생년월일은 yyyy.mm.dd 형식이어야 합니다.");
+            return false;
+        }
+
+        if (!password.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$")) { // 최소 8자, 하나 이상의 문자 및 숫자
+            JOptionPane.showMessageDialog(null, "비밀번호는 영어와 숫자를 포함해야 하며 최소 8자 이상이어야 합니다.");
+            return false;
+        }
+
+        return true;
+    }
+	
+	private boolean isUnderage(String birthdate) { // 미성년자임을 확인
+        String[] parts = birthdate.split("\\.");
+        int year = Integer.parseInt(parts[0]);
+        return year >= 2006;
     }
 
     private boolean isIdDuplicated(String id, String name) {
@@ -142,7 +175,7 @@ public class MembershipForm {
         return false;
     }
 
-    private String hashPassword(String password) {
+    private String hashPassword(String password) { // 비밀번호 해쉬화해서 저장
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hash = md.digest(password.getBytes());
@@ -179,4 +212,3 @@ public class MembershipForm {
         this.tabbedPane = tabbedPane;
     }
 }
-
