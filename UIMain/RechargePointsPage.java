@@ -1,8 +1,10 @@
-// 포인트 충전 페이지(개인정보와 연결 완료)
+// 포인트 충전 페이지(개인정보와 연결 완료, 버튼 살짝 조정)
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class RechargePointsPage extends JFrame {
     JButton btnBack;
@@ -37,24 +39,41 @@ public class RechargePointsPage extends JFrame {
 
         // 포인트 관련 컴포넌트 추가
         JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new GridLayout(3, 1, 10, 10)); // 3행 1열, 세로 간격 10
+        centerPanel.setLayout(new GridBagLayout()); // GridBagLayout 사용
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10);
 
-        Font koreanFont = new Font("Malgun Gothic", Font.PLAIN, 24); // 한글 폰트 설정
-	
+        Font koreanFont = new Font("한컴 말랑말랑 Bold", Font.BOLD, 20); // 한글 폰트 설정
+
         lblCurrentPoints = new JLabel("현재 내 포인트: " + currentPoints);
         lblCurrentPoints.setHorizontalAlignment(SwingConstants.CENTER);
         lblCurrentPoints.setFont(koreanFont); // 폰트, 텍스트 크기 설정
-        centerPanel.add(lblCurrentPoints);
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 3;
+        centerPanel.add(lblCurrentPoints, gbc);
 
-        tfRechargePoints = new JTextField(); // 충전할 포인트 입력받을 필드
-        tfRechargePoints.setHorizontalAlignment(JTextField.CENTER); // 텍스트 중앙 정렬
+        JLabel lblRechargePrompt = new JLabel("충전할 포인트를 입력하세요: ");
+        lblRechargePrompt.setFont(koreanFont);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        centerPanel.add(lblRechargePrompt, gbc);
+
+        tfRechargePoints = new JTextField(10); // 충전할 포인트 입력받을 필드
         tfRechargePoints.setFont(koreanFont);
-        centerPanel.add(tfRechargePoints);
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        centerPanel.add(tfRechargePoints, gbc);
 
         btnRecharge = new JButton("OK");
-        btnRecharge.setFont(koreanFont);
-        centerPanel.add(btnRecharge);
-
+        btnRecharge.setFont(koreanFont); // 작고 귀엽게
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        centerPanel.add(btnRecharge, gbc);
         panel.add(centerPanel, BorderLayout.CENTER);
 
         // 돌아가기 버튼 생성 및 하단 중앙에 추가
@@ -91,7 +110,26 @@ public class RechargePointsPage extends JFrame {
             }
         });
 
+        // 마우스 호버 효과 추가
+        addMouseHoverEffect(btnRecharge, new Color(173, 216, 230));
+
         add(panel);
         setVisible(true);
+    }
+
+    private void addMouseHoverEffect(JButton button, Color hoverColor) { // 마우스 클릭 효과 이벤트
+        button.addMouseListener(new MouseAdapter() {
+            Color originalColor = button.getBackground();
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(hoverColor); // 마우스를 가져다 댔을 때 색상 변경
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(originalColor); // 마우스를 뗐을 때 원래 색상으로 복구
+            }
+        });
     }
 }
