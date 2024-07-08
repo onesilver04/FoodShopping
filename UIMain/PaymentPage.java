@@ -1,4 +1,3 @@
-// 결제 페이지 코드
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -58,7 +57,7 @@ public class PaymentPage extends JFrame {
         // 텍스트 파일에서 주소 읽기
         Member currentUser = SessionManager.getInstance().getCurrentUser();
         String address = currentUser != null ? currentUser.getAddress() : "변경버튼을 눌러서 배송받을 주소를 입력해주세요";
-		
+        
         addressTextArea = new JTextArea(address);
         addressTextArea.setEditable(false);
         addressTextArea.setLineWrap(true);
@@ -190,7 +189,10 @@ public class PaymentPage extends JFrame {
         // 카드 결제 버튼 클릭 시 결제 내역 저장
         cardButton.addActionListener(e -> {
             saveOrderDetails(currentUser, products, quantities, totalAmount);
-            JOptionPane.showMessageDialog(PaymentPage.this, "결제가 완료되었습니다.", "결제 완료", JOptionPane.INFORMATION_MESSAGE);
+            int response = JOptionPane.showConfirmDialog(PaymentPage.this, "결제가 완료되었습니다.", "결제 완료", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            if (response == JOptionPane.OK_OPTION) {
+                dispose(); // OK 버튼을 누르면 창 닫기
+            }
         });
 
         setVisible(true);
@@ -200,8 +202,8 @@ public class PaymentPage extends JFrame {
         productInfoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         productImageLabel = new JLabel();
         ImageIcon productImage = new ImageIcon(imagePath);
-		
-		Image image = productImage.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+        
+        Image image = productImage.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
         productImage = new ImageIcon(image);
 
         productImageLabel.setIcon(productImage);
