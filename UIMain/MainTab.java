@@ -157,6 +157,7 @@ public class MainTab {
         logoutButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0)); // 버튼 경계 설정
         logoutButton.setBackground(Color.WHITE); // 버튼 배경색 설정
         logoutButton.setForeground(Color.BLACK); // 버튼 글자색 설정
+		logoutPage = new LogoutPage(tabbedPane, jf);
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
