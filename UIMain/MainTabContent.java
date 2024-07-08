@@ -11,6 +11,8 @@ import java.net.URL;
 import javax.swing.plaf.FontUIResource;
 import java.util.Enumeration;
 import java.net.MalformedURLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 
 public class MainTabContent {
@@ -194,64 +196,81 @@ public class MainTabContent {
         return panel;
     }
 
-    private JPanel createProductItemPanel(Product product) {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(Color.WHITE); // 개별 제품 패널 배경색 설정
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // 패널 사이 공간을 흰색으로 만듦
+private JPanel createProductItemPanel(Product product) {
+    JPanel panel = new JPanel(new BorderLayout());
+    panel.setBackground(Color.WHITE); // 개별 제품 패널 배경색 설정
+    panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // 패널 사이 공간을 흰색으로 만듦
 
-        // 이미지 로드 시 디버깅 메시지 추가
-        System.out.println("Loading image for product: " + product.getName() + " from path: " + product.getImagePath());
-        ImageIcon imageIcon = loadImageIcon(product.getImagePath(), 150, 150, true);
-        if (imageIcon == null) {
-            System.out.println("Failed to load image for product: " + product.getName());
-        }
-        JLabel imageLabel = new JLabel(imageIcon);
-        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        panel.add(imageLabel, BorderLayout.CENTER);
-
-        JPanel infoPanel = new JPanel(new GridLayout(3, 1)); // 3 rows to include the sale price
-        infoPanel.setBackground(Color.WHITE); // 정보 패널 배경색 설정
-
-        JLabel nameLabel = new JLabel(product.getName());
-        nameLabel.setFont(defaultFont); // 폰트 설정
-        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        nameLabel.setBackground(Color.WHITE);
-        nameLabel.setOpaque(true); // 배경색을 설정하기 위해 불투명하게 만듦
-        infoPanel.add(nameLabel);
-
-        // 가격에 취소선 추가
-        String originalPriceStr = String.format("<html><strike>%s</strike></html>", "가격: " + product.getPrice());
-        JLabel priceLabel = new JLabel(originalPriceStr);
-        priceLabel.setFont(defaultFont); // 폰트 설정
-        priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        priceLabel.setBackground(Color.WHITE);
-        priceLabel.setOpaque(true);
-        infoPanel.add(priceLabel);
-
-        // 움직이는 GIF 아이콘 추가
-        ImageIcon discountIcon = loadImageIcon("/images/boom.gif", 10, 10, false);
-        String salePriceStr = String.format("<html><span style='color:red; font-weight:bold;'>할인가: %s</span></html>", product.getSalePrice());
-        JLabel salePriceLabel = new JLabel(salePriceStr, discountIcon, JLabel.HORIZONTAL);
-        salePriceLabel.setFont(boldFont); // 폰트 설정
-        salePriceLabel.setHorizontalTextPosition(JLabel.LEFT);
-        salePriceLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        salePriceLabel.setBackground(Color.WHITE);
-        salePriceLabel.setOpaque(true);
-        infoPanel.add(salePriceLabel);
-
-        panel.add(infoPanel, BorderLayout.SOUTH);
-
-        panel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                showProductDetail(product);
-            }
-        });
-
-        panel.setPreferredSize(new Dimension(200, 200));
-
-        return panel;
+    // 이미지 로드 시 디버깅 메시지 추가
+    System.out.println("Loading image for product: " + product.getName() + " from path: " + product.getImagePath());
+    ImageIcon imageIcon = loadImageIcon(product.getImagePath(), 150, 150, true);
+    if (imageIcon == null) {
+        System.out.println("Failed to load image for product: " + product.getName());
     }
+    JLabel imageLabel = new JLabel(imageIcon);
+    imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    panel.add(imageLabel, BorderLayout.CENTER);
+
+    JPanel infoPanel = new JPanel(new GridLayout(3, 1)); // 3 rows to include the sale price
+    infoPanel.setBackground(Color.WHITE); // 정보 패널 배경색 설정
+
+    JLabel nameLabel = new JLabel(product.getName());
+    nameLabel.setFont(defaultFont); // 폰트 설정
+    nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    nameLabel.setBackground(Color.WHITE);
+    nameLabel.setOpaque(true); // 배경색을 설정하기 위해 불투명하게 만듦
+    infoPanel.add(nameLabel);
+
+    // 가격에 취소선 추가
+    String originalPriceStr = String.format("<html><strike>%s</strike></html>", "가격: " + product.getPrice());
+    JLabel priceLabel = new JLabel(originalPriceStr);
+    priceLabel.setFont(defaultFont); // 폰트 설정
+    priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    priceLabel.setBackground(Color.WHITE);
+    priceLabel.setOpaque(true);
+    infoPanel.add(priceLabel);
+
+    // 움직이는 GIF 아이콘 추가
+    ImageIcon discountIcon = loadImageIcon("/images/boom.gif", 10, 10, false);
+    String salePriceStr = String.format("<html><span style='color:red; font-weight:bold;'>할인가: %s</span></html>", product.getSalePrice());
+    JLabel salePriceLabel = new JLabel(salePriceStr, discountIcon, JLabel.HORIZONTAL);
+    salePriceLabel.setFont(boldFont); // 폰트 설정
+    salePriceLabel.setHorizontalTextPosition(JLabel.LEFT);
+    salePriceLabel.setHorizontalAlignment(SwingConstants.CENTER);
+    salePriceLabel.setBackground(Color.WHITE);
+    salePriceLabel.setOpaque(true);
+    infoPanel.add(salePriceLabel);
+
+    panel.add(infoPanel, BorderLayout.SOUTH);
+
+    panel.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            if (product.getName().contains("맥주")) {
+                Member loggedInUser = SessionManager.getInstance().getCurrentUser();
+                if (loggedInUser != null) {
+                    String birthdate = loggedInUser.getBirthdate();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+                    LocalDate birthDate = LocalDate.parse(birthdate, formatter);
+                    LocalDate cutoffDate = LocalDate.of(2006, 1, 1);
+                    if (birthDate.isAfter(cutoffDate)) {
+                        JOptionPane.showMessageDialog(mainPanel, "미성년자는 술을 구매할 수 없습니다.");
+                        return;
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(mainPanel, "로그인이 필요합니다.");
+                    return;
+                }
+            }
+            showProductDetail(product);
+        }
+    });
+
+    panel.setPreferredSize(new Dimension(200, 200));
+
+    return panel;
+}
+
 
     private void showProductDetail(Product product) {
         SwingUtilities.invokeLater(() -> {
