@@ -46,6 +46,7 @@ public class MembershipForm {
         panel.add(l2, gbc);
 
         JPasswordField passwordField = new JPasswordField(10); // 패스워드 필드 크기를 줄이기 위해 열 수를 10으로 설정
+        passwordField.setEchoChar('\u25CF'); // 입력된 비밀번호를 유니코드 동그라미 기호로 표시
         gbc.gridx = 1;
         gbc.gridy = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL; // 패스워드 필드가 수평으로 확장되도록 설정
@@ -80,7 +81,7 @@ public class MembershipForm {
         // 월 콤보박스
         JComboBox<String> monthComboBox = new JComboBox<>();
         for (int month = 1; month <= 12; month++) {
-            monthComboBox.addItem(String.valueOf(month));
+            monthComboBox.addItem(String.format("%02d", month)); // 숫자를 두 자리 형식으로 추가
         }
         gbc.gridx = 2;
         gbc.gridy = 4;
@@ -89,7 +90,7 @@ public class MembershipForm {
         // 일 콤보박스
         JComboBox<String> dayComboBox = new JComboBox<>();
         for (int day = 1; day <= 31; day++) {
-            dayComboBox.addItem(String.valueOf(day));
+            dayComboBox.addItem(String.format("%02d", day)); // 숫자를 두 자리 형식으로 추가
         }
         gbc.gridx = 3;
         gbc.gridy = 4;
@@ -140,7 +141,10 @@ public class MembershipForm {
                 String id = idField.getText();
                 String password = new String(passwordField.getPassword());
                 String address = addressField.getText();
-                String birthdate = yearComboBox.getSelectedItem() + "-" + monthComboBox.getSelectedItem() + "-" + dayComboBox.getSelectedItem();
+                // 콤보박스에서 선택된 아이템을 올바른 형식으로 저장
+                String birthdate = yearComboBox.getSelectedItem().toString() + "." +
+                                   monthComboBox.getSelectedItem().toString() + "." +
+                                   dayComboBox.getSelectedItem().toString();
                 String phoneNumber = pNumberField.getText();
 
                 // 회원정보 중 하나라도 입력 안했을 때
@@ -163,7 +167,11 @@ public class MembershipForm {
                 String hashedPassword = hashPassword(password);
                 Member member = new Member(name, id, hashedPassword, address, birthdate, phoneNumber);
                 saveMemberToFile(member); // 입력받은 정보 저장하기
-                JOptionPane.showMessageDialog(r, "가입 완료!");
+
+                int response = JOptionPane.showConfirmDialog(r, "가입 완료!", "회원가입 성공", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+                if (response == JOptionPane.OK_OPTION) {
+                    r.dispose(); // OK 버튼을 누르면 창 닫기
+                }
             }
         });
 
@@ -199,12 +207,13 @@ public class MembershipForm {
     }
 
     private static boolean isUnderage(String birthdate) { // 미성년자임을 확인
-        String[] parts = birthdate.split("-");
+        String[] parts = birthdate.split("\\."); // '.'으로 분리
         int year = Integer.parseInt(parts[0]);
-        return year >= 2006;
+        int currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR);
+        return (currentYear - year) < 18; // 18세 미만인 경우
     }
 
-    // 입력받은 회원정보를 member.text에 있는 name(parts[0]), id(parts[1])정보와 비교
+    // 입력받은 회원정보를 member.txt에 있는 name(parts[0]), id(parts[1])정보와 비교
     private static boolean isIdDuplicated(String id, String name) {
         try (BufferedReader br = new BufferedReader(new FileReader("members.txt"))) {
             String line;
