@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.net.URL;
 import javax.swing.plaf.FontUIResource;
 import java.util.Enumeration;
+import java.net.MalformedURLException;
+
 
 public class MainTabContent {
     private JPanel mainPanel;
@@ -29,6 +31,7 @@ public class MainTabContent {
         "/images/banner1.jpg",
         "/images/banner2.jpg"
     }; // 배너 이미지 파일 경로
+	
 
     public MainTabContent() {
         productDB = new ProductDatabase();
@@ -119,7 +122,7 @@ public class MainTabContent {
         gbc.ipadx = 70;
         panel.add(searchField, gbc);
 
-        ImageIcon searchIcon = loadImageIcon("/images/search.png", 20, 20);
+        ImageIcon searchIcon = loadImageIcon("/images/search.png", 20, 20, false);
         searchClick = new JLabel(searchIcon);
         searchClick.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         searchClick.addMouseListener(new MouseAdapter() {
@@ -139,7 +142,7 @@ public class MainTabContent {
         gbc.weightx = 0;
         panel.add(searchClick, gbc);
 
-        ImageIcon imgSearchIcon = loadImageIcon("/images/imagesearch.png", 20, 20);
+        ImageIcon imgSearchIcon = loadImageIcon("/images/imagesearch.png", 20, 20, false);
         imgsearchClick = new JLabel(imgSearchIcon);
         imgsearchClick.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         imgsearchClick.addMouseListener(new MouseAdapter() {
@@ -198,7 +201,7 @@ public class MainTabContent {
 
         // 이미지 로드 시 디버깅 메시지 추가
         System.out.println("Loading image for product: " + product.getName() + " from path: " + product.getImagePath());
-        ImageIcon imageIcon = loadImageIcon(product.getImagePath(), 150, 150);
+        ImageIcon imageIcon = loadImageIcon(product.getImagePath(), 150, 150, true);
         if (imageIcon == null) {
             System.out.println("Failed to load image for product: " + product.getName());
         }
@@ -226,7 +229,7 @@ public class MainTabContent {
         infoPanel.add(priceLabel);
 
         // 움직이는 GIF 아이콘 추가
-        ImageIcon discountIcon = loadImageIcon("/images/boom.gif", 10, 10);
+        ImageIcon discountIcon = loadImageIcon("/images/boom.gif", 10, 10, false);
         String salePriceStr = String.format("<html><span style='color:red; font-weight:bold;'>할인가: %s</span></html>", product.getSalePrice());
         JLabel salePriceLabel = new JLabel(salePriceStr, discountIcon, JLabel.HORIZONTAL);
         salePriceLabel.setFont(boldFont); // 폰트 설정
@@ -260,8 +263,15 @@ public class MainTabContent {
         return mainPanel;
     }
 
-    private ImageIcon loadImageIcon(String path, int width, int height) {
-        URL imgUrl = getClass().getResource(path);
+    private ImageIcon loadImageIcon(String path, int width, int height, boolean isAbsolutePath) {
+    try {
+        URL imgUrl;
+        if (isAbsolutePath) {
+            imgUrl = new File(path).toURI().toURL();
+        } else {
+            imgUrl = getClass().getResource(path);
+        }
+
         if (imgUrl == null) {
             System.out.println("이미지를 로드할 수 없습니다: " + path);
             return null;
@@ -277,20 +287,26 @@ public class MainTabContent {
             }
             return icon;
         }
+    } catch (MalformedURLException e) {
+        System.out.println("잘못된 이미지 경로: " + path);
+        e.printStackTrace();
+        return null;
     }
+}
+
 
     private void startBannerRotation() {
         bannerTimer = new Timer(5000, new ActionListener() { // 5초마다 이미지 교체
             @Override
             public void actionPerformed(ActionEvent e) {
                 currentBannerIndex = (currentBannerIndex + 1) % bannerImages.length;
-                ImageIcon bannerIcon = loadImageIcon(bannerImages[currentBannerIndex], banner.getWidth(), banner.getHeight());
+                ImageIcon bannerIcon = loadImageIcon(bannerImages[currentBannerIndex], banner.getWidth(), banner.getHeight(), false);
                 banner.setIcon(bannerIcon);
             }
         });
         bannerTimer.start();
         // 초기 이미지 설정
-        ImageIcon initialBannerIcon = loadImageIcon(bannerImages[currentBannerIndex], banner.getWidth(), banner.getHeight());
+        ImageIcon initialBannerIcon = loadImageIcon(bannerImages[currentBannerIndex], banner.getWidth(), banner.getHeight(), false);
         banner.setIcon(initialBannerIcon);
     }
 
