@@ -83,19 +83,23 @@ public class EventPage {
 
         // 날짜 추가
         int daysInMonth = currentMonth.lengthOfMonth();
-        LocalDate eventStartDate = LocalDate.of(2024, 7, 10);
-        LocalDate eventEndDate = LocalDate.of(2024, 7, 15);
+        LocalDate eventStartDate = LocalDate.of(2024, 8, 1);
+        LocalDate eventEndDate = LocalDate.of(2024, 8, 15);
+        LocalDate julyEventStartDate = LocalDate.of(2024, 7, 1); // 7월 1일 이벤트 시작
+        LocalDate julyEventEndDate = LocalDate.of(2024, 7, 15); // 7월 15일 이벤트 종료
+
         for (int day = 1; day <= daysInMonth; day++) {
             LocalDate currentDate = currentMonth.withDayOfMonth(day);
-            DayLabel dayLabel = new DayLabel(day, currentDate, eventStartDate, eventEndDate);
+            DayLabel dayLabel = new DayLabel(day, currentDate, eventStartDate, eventEndDate, julyEventStartDate, julyEventEndDate);
             calendarPanel.add(dayLabel);
 
             // 툴팁 추가
-            if (currentDate.getDayOfMonth() == 1) {
-                dayLabel.setToolTipText("<html>정기 이벤트 :<br> 매달 첫째 날에 선착순 10명에게 5% 할인 쿠폰 증정</html>");
+            if (currentDate.getDayOfMonth() == 28) {
+                dayLabel.setToolTipText("<html>정기 이벤트 :<br> 매달 28일 선착순 10명에게 5% 할인 쿠폰 증정</html>");
             } else if (!currentDate.isBefore(eventStartDate) && !currentDate.isAfter(eventEndDate)) {
-                dayLabel.setToolTipText("<html>7/10-7/15 여름 맞이 세일 이벤트 :<br>여름 맞이 수박 및 복숭아 할인 이벤트</html>");
-
+                dayLabel.setToolTipText("<html>8/1-8/15 여름 맞이 세일 대전 :<br>전 상품 50% 할인 이벤트</html>");
+            } else if (!currentDate.isBefore(julyEventStartDate) && !currentDate.isAfter(julyEventEndDate)) {
+                dayLabel.setToolTipText("<html>7/1-7/15 명품김치 세일 대전 :<br>김치 상품 40% 할인</html>");
             }
         }
 
@@ -122,12 +126,16 @@ public class EventPage {
         private LocalDate currentDate;
         private LocalDate eventStartDate;
         private LocalDate eventEndDate;
+        private LocalDate julyEventStartDate;
+        private LocalDate julyEventEndDate;
 
-        public DayLabel(int day, LocalDate currentDate, LocalDate eventStartDate, LocalDate eventEndDate) {
+        public DayLabel(int day, LocalDate currentDate, LocalDate eventStartDate, LocalDate eventEndDate, LocalDate julyEventStartDate, LocalDate julyEventEndDate) {
             super(String.valueOf(day));
             this.currentDate = currentDate;
             this.eventStartDate = eventStartDate;
             this.eventEndDate = eventEndDate;
+            this.julyEventStartDate = julyEventStartDate;
+            this.julyEventEndDate = julyEventEndDate;
             setHorizontalAlignment(SwingConstants.CENTER);
             setVerticalAlignment(SwingConstants.TOP);
         }
@@ -135,13 +143,13 @@ public class EventPage {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            if (currentDate.getDayOfMonth() == 1) {
+            if (currentDate.getDayOfMonth() == 28) {
                 g.setColor(new Color(144, 238, 144)); // 초록색으로 변경
                 g.fillRect(0, getHeight() / 2, getWidth(), getHeight() / 2); // 칸의 하단 절반만 색칠
 				g.setColor(Color.BLACK);
                 g.setFont(new Font("Dialog", Font.BOLD, 11)); // 기본 폰트 사용
                 FontMetrics fm = g.getFontMetrics();
-                String eventText1 = "1일 정기 이벤트";
+                String eventText1 = "28일 정기 이벤트";
                 int textWidth1 = fm.stringWidth(eventText1);
                 int x1 = (getWidth() - textWidth1) / 2;
                 g.drawString(eventText1, x1, getHeight() - fm.getHeight() * 2);
@@ -152,8 +160,24 @@ public class EventPage {
                 if (currentDate.equals(eventStartDate)) {
                     g.setFont(new Font("Dialog", Font.BOLD, 11)); // 기본 폰트 사용
                     FontMetrics fm = g.getFontMetrics();
-                    String eventText1 = "7/10-7/15";
-                    String eventText2 = "여름 맞이 세일 이벤트";
+                    String eventText1 = "8/1-8/15";
+                    String eventText2 = "여름 맞이 세일 대전";
+                    int textWidth1 = fm.stringWidth(eventText1);
+                    int textWidth2 = fm.stringWidth(eventText2);
+                    int x1 = (getWidth() - textWidth1) / 2;
+                    int x2 = (getWidth() - textWidth2) / 2;
+                    g.drawString(eventText1, x1, getHeight() - fm.getHeight() * 2);
+                    g.drawString(eventText2, x2, getHeight() - fm.getHeight());
+                }
+            } else if (!currentDate.isBefore(julyEventStartDate) && !currentDate.isAfter(julyEventEndDate)) {
+                g.setColor(new Color(255, 192, 203)); // 분홍색으로 변경
+                g.fillRect(0, getHeight() / 2, getWidth(), getHeight() / 2); // 칸의 하단 절반만 색칠
+                g.setColor(Color.BLACK);
+                if (currentDate.equals(julyEventStartDate)) {
+                    g.setFont(new Font("Dialog", Font.BOLD, 11)); // 기본 폰트 사용
+                    FontMetrics fm = g.getFontMetrics();
+                    String eventText1 = "7/1-7/15";
+                    String eventText2 = "명품 김치 세일 대전";
                     int textWidth1 = fm.stringWidth(eventText1);
                     int textWidth2 = fm.stringWidth(eventText2);
                     int x1 = (getWidth() - textWidth1) / 2;
