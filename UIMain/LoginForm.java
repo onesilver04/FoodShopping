@@ -78,13 +78,25 @@ public class LoginForm {
         b.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                if (SessionManager.getInstance().isLoggedIn()) {
+                    JOptionPane.showMessageDialog(panel, "이미 로그인 되어 있습니다.");
+					text.setText("");
+                    value.setText("");
+                    return;
+                }
+                
                 String id = text.getText();
                 String password = new String(value.getPassword());
 
                 if (CheckMember.validateLogin(id, password)) {
                     JOptionPane.showMessageDialog(panel, "로그인 성공!");
-                    openMainTab();
-                    // 로그인 성공 시 추가 로직: 메인 페이지로 이동+로그인 정보 유지
+                    text.setText("");
+                    value.setText("");
+
+                    // 로그인 성공 시 SessionManager를 통해 사용자 정보를 저장
+                    Member loggedInUser = CheckMember.getMemberById(id);
+                    SessionManager.getInstance().login(loggedInUser);
+
                     openMainTab();
                 } else {
                     JOptionPane.showMessageDialog(panel, "로그인 실패! 아이디 또는 비밀번호를 확인해주세요.");
