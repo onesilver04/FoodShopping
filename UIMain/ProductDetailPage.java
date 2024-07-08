@@ -4,8 +4,6 @@ import java.awt.event.*;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class ProductDetailPage {
     private JFrame f;
@@ -122,20 +120,20 @@ public class ProductDetailPage {
         buyNowButton.setForeground(Color.WHITE);
         buttonPanel.add(addToCartButton);
         buttonPanel.add(buyNowButton);
-		
-		// 바로 구매 버튼 이벤트 추가
+
+        // 바로 구매 버튼 이벤트 추가
         buyNowButton.addActionListener(e -> {
             if (SessionManager.getInstance().getCurrentUser() != null) {
                 if (quantity > 0) {
-					JFrame paymentFrame = new PaymentPage(product, quantity);
-					paymentFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-					paymentFrame.setVisible(true);
+                    JFrame paymentFrame = new PaymentPage(product, quantity);
+                    paymentFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    paymentFrame.setVisible(true);
                     f.dispose(); // 현재 창 닫기
                 } else {
                     JOptionPane.showMessageDialog(f, "수량을 선택해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
                 }
             } else {
-                 handleLoginAndPurchase(); // 로그인되지 않은 상태라면 handleLoginAndPurchase() 호출
+                handleLoginAndPurchase(); // 로그인되지 않은 상태라면 handleLoginAndPurchase() 호출
             }
         });
 
@@ -163,12 +161,12 @@ public class ProductDetailPage {
             int result = JOptionPane.showConfirmDialog(f, "로그인이 필요합니다. 로그인하시겠습니까?", "로그인 필요", JOptionPane.YES_NO_OPTION);
             if (result == JOptionPane.YES_OPTION) {
                 showLoginDialog();
-				addToCart();
+                addToCart();
             }
         }
     }
-	
-	private void handleLoginAndPurchase() {
+
+    private void handleLoginAndPurchase() {
         int result = JOptionPane.showConfirmDialog(f, "로그인이 필요합니다. 로그인하시겠습니까?", "로그인 필요", JOptionPane.YES_NO_OPTION);
         if (result == JOptionPane.YES_OPTION) {
             showLoginDialog();
@@ -190,7 +188,10 @@ public class ProductDetailPage {
             bw.write(cartEntry);
             bw.newLine();
             currentUser.getCartItems().add(cartEntry); // 세션의 장바구니 정보 업데이트
-            JOptionPane.showMessageDialog(f, "장바구니에 상품이 추가되었습니다.");
+            int response = JOptionPane.showConfirmDialog(f, "장바구니에 상품이 추가되었습니다.", "알림", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE);
+            if (response == JOptionPane.OK_OPTION) {
+                f.dispose(); // OK 버튼을 누르면 창 닫기
+            }
             if (cartTabContent != null) {
                 cartTabContent.loadCartItems(); // 장바구니 페이지 업데이트
             }
