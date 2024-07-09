@@ -14,7 +14,6 @@ import java.net.MalformedURLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-
 public class MainTabContent {
     private JPanel mainPanel;
     private JPanel productPanel, topPanel, searchPanel, bPanel;
@@ -23,17 +22,15 @@ public class MainTabContent {
     private JLabel searchClick, imgsearchClick;
     private JScrollPane scrollPane;
     private ProductDatabase productDB;
-    private JTabbedPane tabbedPane;
     private Font customFont;
     private Font defaultFont;
     private Font boldFont;
     private Timer bannerTimer;
     private int currentBannerIndex = 0;
     private final String[] bannerImages = {
-        "/images/banner1.jpg",
-        "/images/banner2.jpg"
+        "/Image/banner1.jpg",
+        "/Image/banner2.jpg"
     }; // 배너 이미지 파일 경로
-	
 
     public MainTabContent() {
         productDB = new ProductDatabase();
@@ -124,7 +121,7 @@ public class MainTabContent {
         gbc.ipadx = 70;
         panel.add(searchField, gbc);
 
-        ImageIcon searchIcon = loadImageIcon("/images/search.png", 20, 20, false);
+        ImageIcon searchIcon = loadImageIcon("/Image/search.png", 20, 20, false);
         searchClick = new JLabel(searchIcon);
         searchClick.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         searchClick.addMouseListener(new MouseAdapter() {
@@ -144,7 +141,7 @@ public class MainTabContent {
         gbc.weightx = 0;
         panel.add(searchClick, gbc);
 
-        ImageIcon imgSearchIcon = loadImageIcon("/images/imagesearch.png", 20, 20, false);
+        ImageIcon imgSearchIcon = loadImageIcon("/Image/imagesearch.png", 20, 20, false);
         imgsearchClick = new JLabel(imgSearchIcon);
         imgsearchClick.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         imgsearchClick.addMouseListener(new MouseAdapter() {
@@ -180,6 +177,28 @@ public class MainTabContent {
         banner.setHorizontalAlignment(SwingConstants.CENTER);
         banner.setPreferredSize(new Dimension(800, 150)); // 배너 크기 설정
         banner.setSize(new Dimension(800, 150)); // 배너 크기 설정 추가
+
+        // 마우스 리스너 추가
+        banner.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                banner.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                banner.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // 첫 번째 배너 클릭 시 이벤트 탭으로 전환
+                if (currentBannerIndex == 0) {
+                    MainTab.switchToEventTab(); // MainTab의 정적 메서드 호출
+                }
+            }
+        });
+
         panel.add(banner, BorderLayout.CENTER);
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         return panel;
@@ -196,81 +215,80 @@ public class MainTabContent {
         return panel;
     }
 
-private JPanel createProductItemPanel(Product product) {
-    JPanel panel = new JPanel(new BorderLayout());
-    panel.setBackground(Color.WHITE); // 개별 제품 패널 배경색 설정
-    panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // 패널 사이 공간을 흰색으로 만듦
+    private JPanel createProductItemPanel(Product product) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(Color.WHITE); // 개별 제품 패널 배경색 설정
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // 패널 사이 공간을 흰색으로 만듦
 
-    // 이미지 로드 시 디버깅 메시지 추가
-    System.out.println("Loading image for product: " + product.getName() + " from path: " + product.getImagePath());
-    ImageIcon imageIcon = loadImageIcon(product.getImagePath(), 150, 150, true);
-    if (imageIcon == null) {
-        System.out.println("Failed to load image for product: " + product.getName());
-    }
-    JLabel imageLabel = new JLabel(imageIcon);
-    imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-    panel.add(imageLabel, BorderLayout.CENTER);
+        // 이미지 로드 시 디버깅 메시지 추가
+        System.out.println("Loading image for product: " + product.getName() + " from path: " + product.getImagePath());
+        ImageIcon imageIcon = loadImageIcon(product.getImagePath(), 150, 150, true);
+        if (imageIcon == null) {
+            System.out.println("Failed to load image for product: " + product.getName());
+        }
+        JLabel imageLabel = new JLabel(imageIcon);
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        panel.add(imageLabel, BorderLayout.CENTER);
 
-    JPanel infoPanel = new JPanel(new GridLayout(3, 1)); // 3 rows to include the sale price
-    infoPanel.setBackground(Color.WHITE); // 정보 패널 배경색 설정
+        JPanel infoPanel = new JPanel(new GridLayout(3, 1)); // 3 rows to include the sale price
+        infoPanel.setBackground(Color.WHITE); // 정보 패널 배경색 설정
 
-    JLabel nameLabel = new JLabel(product.getName());
-    nameLabel.setFont(defaultFont); // 폰트 설정
-    nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
-    nameLabel.setBackground(Color.WHITE);
-    nameLabel.setOpaque(true); // 배경색을 설정하기 위해 불투명하게 만듦
-    infoPanel.add(nameLabel);
+        JLabel nameLabel = new JLabel(product.getName());
+        nameLabel.setFont(defaultFont); // 폰트 설정
+        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        nameLabel.setBackground(Color.WHITE);
+        nameLabel.setOpaque(true); // 배경색을 설정하기 위해 불투명하게 만듦
+        infoPanel.add(nameLabel);
 
-    // 가격에 취소선 추가
-    String originalPriceStr = String.format("<html><strike>%s</strike></html>", "가격: " + product.getPrice());
-    JLabel priceLabel = new JLabel(originalPriceStr);
-    priceLabel.setFont(defaultFont); // 폰트 설정
-    priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
-    priceLabel.setBackground(Color.WHITE);
-    priceLabel.setOpaque(true);
-    infoPanel.add(priceLabel);
+        // 가격에 취소선 추가
+        String originalPriceStr = String.format("<html><strike>%s</strike></html>", "가격: " + product.getPrice());
+        JLabel priceLabel = new JLabel(originalPriceStr);
+        priceLabel.setFont(defaultFont); // 폰트 설정
+        priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        priceLabel.setBackground(Color.WHITE);
+        priceLabel.setOpaque(true);
+        infoPanel.add(priceLabel);
 
-    // 움직이는 GIF 아이콘 추가
-    ImageIcon discountIcon = loadImageIcon("/images/boom.gif", 10, 10, false);
-    String salePriceStr = String.format("<html><span style='color:red; font-weight:bold;'>할인가: %s</span></html>", product.getSalePrice());
-    JLabel salePriceLabel = new JLabel(salePriceStr, discountIcon, JLabel.HORIZONTAL);
-    salePriceLabel.setFont(boldFont); // 폰트 설정
-    salePriceLabel.setHorizontalTextPosition(JLabel.LEFT);
-    salePriceLabel.setHorizontalAlignment(SwingConstants.CENTER);
-    salePriceLabel.setBackground(Color.WHITE);
-    salePriceLabel.setOpaque(true);
-    infoPanel.add(salePriceLabel);
+        // 움직이는 GIF 아이콘 추가
+        ImageIcon discountIcon = loadImageIcon("/Image/boom.gif", 10, 10, false);
+        String salePriceStr = String.format("<html><span style='color:red; font-weight:bold;'>할인가: %s</span></html>", product.getSalePrice());
+        JLabel salePriceLabel = new JLabel(salePriceStr, discountIcon, JLabel.HORIZONTAL);
+        salePriceLabel.setFont(boldFont); // 폰트 설정
+        salePriceLabel.setHorizontalTextPosition(JLabel.LEFT);
+        salePriceLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        salePriceLabel.setBackground(Color.WHITE);
+        salePriceLabel.setOpaque(true);
+        infoPanel.add(salePriceLabel);
 
-    panel.add(infoPanel, BorderLayout.SOUTH);
+        panel.add(infoPanel, BorderLayout.SOUTH);
 
-    panel.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            if (product.getName().contains("맥주")) {
-                Member loggedInUser = SessionManager.getInstance().getCurrentUser();
-                if (loggedInUser != null) {
-                    String birthdate = loggedInUser.getBirthdate();
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
-                    LocalDate birthDate = LocalDate.parse(birthdate, formatter);
-                    LocalDate cutoffDate = LocalDate.of(2006, 1, 1);
-                    if (birthDate.isAfter(cutoffDate)) {
-                        JOptionPane.showMessageDialog(mainPanel, "미성년자는 술을 구매할 수 없습니다.");
+        panel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (product.getName().contains("맥주")) {
+                    Member loggedInUser = SessionManager.getInstance().getCurrentUser();
+                    if (loggedInUser != null) {
+                        String birthdate = loggedInUser.getBirthdate();
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+                        LocalDate birthDate = LocalDate.parse(birthdate, formatter);
+                        LocalDate cutoffDate = LocalDate.of(2006, 1, 1);
+                        if (birthDate.isAfter(cutoffDate)) {
+                            JOptionPane.showMessageDialog(mainPanel, "미성년자(만 19세 미만)는 술을 구매할 수 없습니다.");
+                            return;
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(mainPanel, "로그인이 필요합니다.");
                         return;
                     }
-                } else {
-                    JOptionPane.showMessageDialog(mainPanel, "로그인이 필요합니다.");
-                    return;
                 }
+                showProductDetail(product);
             }
-            showProductDetail(product);
-        }
-    });
+        });
 
-    panel.setPreferredSize(new Dimension(200, 200));
+        panel.setPreferredSize(new Dimension(200, 200));
 
-    return panel;
-}
-
+        return panel;
+    }
 
     private void showProductDetail(Product product) {
         SwingUtilities.invokeLater(() -> {
@@ -283,36 +301,35 @@ private JPanel createProductItemPanel(Product product) {
     }
 
     private ImageIcon loadImageIcon(String path, int width, int height, boolean isAbsolutePath) {
-    try {
-        URL imgUrl;
-        if (isAbsolutePath) {
-            imgUrl = new File(path).toURI().toURL();
-        } else {
-            imgUrl = getClass().getResource(path);
-        }
-
-        if (imgUrl == null) {
-            System.out.println("이미지를 로드할 수 없습니다: " + path);
-            return null;
-        } else {
-            ImageIcon icon = new ImageIcon(imgUrl);
-            // 파일 확장자 확인하여 GIF인 경우 크기 조정을 하지 않음
-            if (path.endsWith(".gif")) {
-                return icon; // GIF 파일은 크기 조정 없이 반환
-            } else if (width > 0 && height > 0) {
-                Image image = icon.getImage();
-                Image resizedImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-                return new ImageIcon(resizedImage);
+        try {
+            URL imgUrl;
+            if (isAbsolutePath) {
+                imgUrl = new File(path).toURI().toURL();
+            } else {
+                imgUrl = getClass().getResource(path);
             }
-            return icon;
-        }
-    } catch (MalformedURLException e) {
-        System.out.println("잘못된 이미지 경로: " + path);
-        e.printStackTrace();
-        return null;
-    }
-}
 
+            if (imgUrl == null) {
+                System.out.println("이미지를 로드할 수 없습니다: " + path);
+                return null;
+            } else {
+                ImageIcon icon = new ImageIcon(imgUrl);
+                // 파일 확장자 확인하여 GIF인 경우 크기 조정을 하지 않음
+                if (path.endsWith(".gif")) {
+                    return icon; // GIF 파일은 크기 조정 없이 반환
+                } else if (width > 0 && height > 0) {
+                    Image image = icon.getImage();
+                    Image resizedImage = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+                    return new ImageIcon(resizedImage);
+                }
+                return icon;
+            }
+        } catch (MalformedURLException e) {
+            System.out.println("잘못된 이미지 경로: " + path);
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     private void startBannerRotation() {
         bannerTimer = new Timer(5000, new ActionListener() { // 5초마다 이미지 교체
