@@ -9,15 +9,46 @@
 JAVA를 이용해서 식료품 구매 사이트를 구현한 프로젝트 🍧 <br>
 
 ## 👥 팀원 소개
-|<img src="https://github.com/onesilver04.png" width="80">|<img src="https://github.com/jchaerry.png" width="80">|<img src="https://github.com/ssse0y.png" width="80">|
-
-|:---|:---|:---|
-
-|[](https://github.com/onesilver04)|[](https://github.com/jchaerry)|[](https://github.com/ssse0y)|
-
-|백엔드|백엔드|프론트엔드|
+|      백서연       |          정채리         |       한은정         |                                                                                                               
+| :------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | 
+|   <img width="160px" src="https://user-images.githubusercontent.com/ssse0y.png" />    |                      <img width="160px" src="https://user-images.githubusercontent.com/jchaerry.png" />    |                   <img width="160px" src="https://user-images.githubusercontent.com/onesilver04.png"/>   |
+|   [@ssse0y](https://github.com/ssse0y)   |    [@jchaerry](https://github.com/jchaerry)  | [@onesilver04](https://github.com/onesilver04)  |
+| 프론트엔드 | 백엔드 | 백엔드 |
 
 ## 🌳 사용 방법
 
 ### 🙆 공통 🙆‍♀️
 JAVA(edit plus)가 설치 되어야 합니다.
+
+---
+## 화면 구성 📦
+
+### ⭐️ 메인
+
+#### 주요 기능 📦
+- 검색창
+- 이미지 검색
+- 배너 이벤트
+- 상품 클릭 이벤트
+- 미성년자 구매 제한
+- UI
+
+### ⭐️ 로그인
+- UI
+- 버튼 클릭
+- 회원가입 정보 기반 로그인 설정
+
+### ⭐️ 마이페이지
+- 포인트 충전 페이지
+- 주문 내역 확인
+
+### ⭐️ 장바구니
+- 로그인 정보 기반 주문 버튼 이벤트
+- 가격 정보 출력
+
+### ⭐️ 배송조회
+- API 연결
+- 배송 조회 버튼 이벤트
+
+### ⭐️ 이벤트
+- 캘린더 제작
