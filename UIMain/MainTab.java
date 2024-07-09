@@ -1,3 +1,4 @@
+// 탭 구성
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
@@ -12,8 +13,8 @@ import javax.swing.event.ChangeListener;
 import java.awt.FontFormatException;
 
 public class MainTab {
+    private static JTabbedPane tabbedPane; // 정적 변수로 선언
     JFrame jf;
-    JTabbedPane tabbedPane;
     LogoutPage logoutPage;
     private Font customFont;
 
@@ -51,7 +52,7 @@ public class MainTab {
     }
 
     private void initComponents() {
-        tabbedPane = new JTabbedPane();
+        tabbedPane = new JTabbedPane(); // 정적 변수로 초기화
         tabbedPane.setBackground(Color.WHITE);
         tabbedPane.setOpaque(true);
 
@@ -108,7 +109,7 @@ public class MainTab {
         tabbedPane.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 int selectedIndex = tabbedPane.getSelectedIndex();
-                if (selectedIndex == 5) { // 이벤트 탭의 인덱스가 5라고 가정
+                if (selectedIndex == 5) { // 이벤트 탭의 인덱스 = 5
                     JPanel newEventPage = EventPage.createEventPage();
                     tabbedPane.setComponentAt(5, newEventPage);
                 }
@@ -136,7 +137,7 @@ public class MainTab {
         JPanel logoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         logoPanel.setBackground(Color.WHITE);
 
-        ImageIcon logoIcon = new ImageIcon("images/logo.png");
+        ImageIcon logoIcon = new ImageIcon("Image/logo.png");
         Image logoImage = logoIcon.getImage(); // ImageIcon에서 이미지 가져오기
         Image resizedImage = logoImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH); // 이미지 크기 조정
         logoIcon = new ImageIcon(resizedImage); // 조정된 이미지로 새로운 ImageIcon 생성
@@ -157,7 +158,7 @@ public class MainTab {
         logoutButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0)); // 버튼 경계 설정
         logoutButton.setBackground(Color.WHITE); // 버튼 배경색 설정
         logoutButton.setForeground(Color.BLACK); // 버튼 글자색 설정
-		logoutPage = new LogoutPage(tabbedPane, jf);
+        logoutPage = new LogoutPage(tabbedPane, jf);
         logoutButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -187,7 +188,10 @@ public class MainTab {
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new MainTab("메인 화면"));
+    // 이벤트 탭으로 전환하는 정적 메서드
+    public static void switchToEventTab() {
+        if (tabbedPane != null) {
+            tabbedPane.setSelectedIndex(5); // 이벤트 탭의 인덱스 = 5
+        }
     }
 }
