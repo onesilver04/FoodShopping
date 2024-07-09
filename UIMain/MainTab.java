@@ -1,4 +1,3 @@
-// 탭 구성
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
@@ -99,7 +98,9 @@ public class MainTab {
         tabbedPane.addTab("장바구니", emptyCartPanel);
         setTabColor(tabbedPane, 3, new Color(47, 157, 39));
 
-        tabbedPane.addTab("배송 조회", new Delivery());
+        // 배송 조회 탭도 빈 패널로 시작하고 선택 시 초기화
+        JPanel emptyDeliveryPanel = new JPanel();
+        tabbedPane.addTab("배송 조회", emptyDeliveryPanel);
         setTabColor(tabbedPane, 4, new Color(47, 157, 39));
 
         JPanel eventPagePanel = new JPanel();
@@ -119,10 +120,19 @@ public class MainTab {
         tabbedPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                if (tabbedPane.getSelectedIndex() == 3) { // 장바구니 탭이 선택된 경우
+                if (tabbedPane.getSelectedIndex() == 2 || tabbedPane.getSelectedIndex() == 3) { // 장바구니 탭이 선택된 경우
                     if (SessionManager.getInstance().getCurrentUser() != null) {
                         CartTabContent cartTabContent = new CartTabContent();
                         tabbedPane.setComponentAt(3, cartTabContent.getMainPanel());
+                    } else {
+                        JOptionPane.showMessageDialog(jf, "로그인이 필요합니다.");
+                        tabbedPane.setSelectedIndex(1); // 로그인 탭으로 이동
+                    }
+                }
+                if (tabbedPane.getSelectedIndex() == 4) { // 배송 조회 탭이 선택된 경우
+                    if (SessionManager.getInstance().getCurrentUser() != null) {
+                        Delivery deliveryContent = new Delivery();
+                        tabbedPane.setComponentAt(4, deliveryContent);
                     } else {
                         JOptionPane.showMessageDialog(jf, "로그인이 필요합니다.");
                         tabbedPane.setSelectedIndex(1); // 로그인 탭으로 이동
@@ -137,7 +147,7 @@ public class MainTab {
         JPanel logoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         logoPanel.setBackground(Color.WHITE);
 
-        ImageIcon logoIcon = new ImageIcon("Image/logo.png");
+        ImageIcon logoIcon = new ImageIcon("images/logo.png");
         Image logoImage = logoIcon.getImage(); // ImageIcon에서 이미지 가져오기
         Image resizedImage = logoImage.getScaledInstance(40, 40, Image.SCALE_SMOOTH); // 이미지 크기 조정
         logoIcon = new ImageIcon(resizedImage); // 조정된 이미지로 새로운 ImageIcon 생성
