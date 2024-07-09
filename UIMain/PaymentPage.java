@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class PaymentPage extends JFrame {
     JLabel couponLabel, totalAmountLabel, totalAmountValue, productImageLabel, productLabel;
@@ -219,12 +220,22 @@ public class PaymentPage extends JFrame {
     }
 
     private void saveOrderDetails(Member member, List<Product> products, List<Integer> quantities, int totalAmount) {
+        String trackingNumber = generateTrackingNumber(); // 운송장 번호를 한 번만 생성
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(ORDERS_FILE, true))) {
             for (int i = 0; i < products.size(); i++) {
-                writer.write(String.format("%s,%s,%d,%d,%d\n", member.getId(), products.get(i).getName(), quantities.get(i), products.get(i).getSalePrice(), totalAmount));
+                writer.write(String.format("%s,%s,%d,%d,%d,%s\n", member.getId(), products.get(i).getName(), quantities.get(i), products.get(i).getSalePrice(), totalAmount, trackingNumber));
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private String generateTrackingNumber() {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 10; i++) {
+            sb.append(random.nextInt(10));
+        }
+        return sb.toString();
     }
 }
