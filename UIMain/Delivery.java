@@ -22,10 +22,6 @@ public class Delivery extends JPanel {
 
     public Delivery() {
         Member currentUser = SessionManager.getInstance().getCurrentUser();
-        if (currentUser == null) {
-            JOptionPane.showMessageDialog(null, "로그인이 필요합니다.", "오류", JOptionPane.ERROR_MESSAGE);
-            return; // 패널을 생성하지 않고 종료
-        }
 
         setLayout(new BorderLayout());
         setBackground(Color.WHITE); // 배경 흰색으로 설정
@@ -68,7 +64,7 @@ public class Delivery extends JPanel {
         profilePanel.add(profileImageLabel);
 
         // 아이디 라벨
-        JLabel idLabel = new JLabel(currentUser.getId());
+        JLabel idLabel = new JLabel(currentUser != null ? currentUser.getId() : "Guest");
         idLabel.setFont(new Font("한컴 말랑말랑 Bold", Font.BOLD, 20));
         idLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         idLabel.setBackground(Color.WHITE); // 배경 흰색으로 설정
@@ -128,7 +124,9 @@ public class Delivery extends JPanel {
         add(tablePanel, BorderLayout.CENTER);
         add(iconPanel, BorderLayout.SOUTH);
 
-        loadOrderData(currentUser.getId()); // 로그인된 사용자의 주문 내역 불러오기
+        if (currentUser != null) {
+            loadOrderData(currentUser.getId()); // 로그인된 사용자의 주문 내역 불러오기
+        }
     }
 
     // ImageIcon을 생성하기 위한 예제 코드
