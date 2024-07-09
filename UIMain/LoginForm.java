@@ -15,7 +15,7 @@ public class LoginForm {
         GridBagConstraints outerGbc = new GridBagConstraints();
         outerGbc.insets = new Insets(10, 10, 10, 10); // 외부 패널의 간격 설정
 
-        RoundedPanel panel = new RoundedPanel(15, new Color(234, 234, 234)); // 둥근 모서리 패널 생성 (테두리 색상 지정)
+        RoundedPanel panel = new RoundedPanel(30, new Color(234, 234, 234)); // 둥근 모서리 패널 생성 (테두리 색상 지정)
         panel.setPreferredSize(new Dimension(200, 250)); // 내부 패널 크기 설정
         panel.setBackground(new Color(234, 234, 234)); // 내부 패널 배경색 설정
         panel.setBorder(new EmptyBorder(20, 20, 20, 20)); // 패널 내부 여백 설정
@@ -29,49 +29,69 @@ public class LoginForm {
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.NORTH; // 맨 위에 위치하도록 설정
         JLabel titleLabel = new JLabel("Log-in");
-        titleLabel.setFont(new Font("한컴 말랑말랑 Bold", Font.BOLD, 18)); // 폰트 설정
-        panel.add(titleLabel, gbc);
+        titleLabel.setFont(new Font("한컴 말랑말랑 Bold", Font.BOLD, 25)); // 폰트 설정
+        panel.add(titleLabel, gbc);// 빈 패널을 추가하여 간격을 조절
+		
+		gbc.gridy = 1; 
+		JPanel spacer1 = new JPanel();
+		spacer1.setPreferredSize(new Dimension(0, 20)); // 간격 크기 설정
+		panel.add(spacer1, gbc);
+		
+		
 
         // ID 레이블과 텍스트 필드
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         gbc.gridwidth = 1; // 기본으로 돌아감
         gbc.anchor = GridBagConstraints.WEST; // 왼쪽 정렬
         JLabel l1 = new JLabel("ID:");
         panel.add(l1, gbc);
 
         gbc.gridx = 1;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL; // 텍스트 필드가 수평으로 확장되도록 설정
         JTextField text = new JTextField(10); // 텍스트 필드 크기를 줄이기 위해 열 수를 10으로 설정
         panel.add(text, gbc);
 
         // 비밀번호 레이블과 패스워드 필드
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         JLabel l2 = new JLabel("비밀번호:");
         panel.add(l2, gbc);
 
         gbc.gridx = 1;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.fill = GridBagConstraints.HORIZONTAL; // 패스워드 필드가 수평으로 확장되도록 설정
         JPasswordField value = new JPasswordField(10); // 패스워드 필드 크기를 줄이기 위해 열 수를 10으로 설정
         value.setEchoChar('\u25CF'); // 입력된 비밀번호를 유니코드 동그라미 기호로 표시
         panel.add(value, gbc);
 
+        Dimension buttonSize = new Dimension(150, 30); // 버튼의 크기를 동일하게 설정
+		
+		// 빈 패널을 추가하여 간격을 조절
+		gbc.gridx = 0;
+		gbc.gridy = 4;
+		gbc.gridwidth = 2;
+		gbc.fill = GridBagConstraints.VERTICAL;
+		JPanel spacer2 = new JPanel();
+		spacer2.setPreferredSize(new Dimension(0, 5)); // 간격 크기 설정
+		panel.add(spacer2, gbc);
+
         // 로그인 버튼
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 5;
         gbc.gridwidth = 2; // 2개의 컬럼에 걸쳐서 버튼 추가
         gbc.anchor = GridBagConstraints.CENTER; // 버튼을 중앙 정렬
         gbc.fill = GridBagConstraints.NONE;
         JButton b = new JButton("로그인");
+        b.setPreferredSize(buttonSize); // 크기 설정
         b.setBackground(new Color(47, 157, 39));
         panel.add(b, gbc);
 
         // 회원가입 버튼
-        gbc.gridy = 4; // 회원가입 버튼은 로그인 버튼 아래에 위치
+        gbc.gridy = 6; // 회원가입 버튼은 로그인 버튼 아래에 위치
         JButton rB = new JButton("회원가입");
+        rB.setPreferredSize(buttonSize); // 크기 설정
         rB.setBackground(Color.LIGHT_GRAY);
         panel.add(rB, gbc);
 
@@ -80,11 +100,11 @@ public class LoginForm {
             public void actionPerformed(ActionEvent e) {
                 if (SessionManager.getInstance().isLoggedIn()) {
                     JOptionPane.showMessageDialog(panel, "이미 로그인 되어 있습니다.");
-					text.setText("");
+                    text.setText("");
                     value.setText("");
                     return;
                 }
-                
+
                 String id = text.getText();
                 String password = new String(value.getPassword());
 
