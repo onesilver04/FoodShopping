@@ -155,16 +155,26 @@ public class ProductDetailPage {
     }
 
     private void handleCartButton() {
-        if (SessionManager.getInstance().getCurrentUser() != null) {
-            addToCart();
+		if (SessionManager.getInstance().getCurrentUser() != null) {
+        if (quantity == 0) {  // 수량을 확인
+            JOptionPane.showMessageDialog(f, "수량을 선택해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
         } else {
-            int result = JOptionPane.showConfirmDialog(f, "로그인이 필요합니다. 로그인하시겠습니까?", "로그인 필요", JOptionPane.YES_NO_OPTION);
-            if (result == JOptionPane.YES_OPTION) {
-                showLoginDialog();
-                addToCart();
+            addToCart();
+        }
+    } else {
+        int result = JOptionPane.showConfirmDialog(f, "로그인이 필요합니다. 로그인하시겠습니까?", "로그인 필요", JOptionPane.YES_NO_OPTION);
+        if (result == JOptionPane.YES_OPTION) {
+            showLoginDialog();
+            if (SessionManager.getInstance().getCurrentUser() != null) {  // 로그인 성공 시
+                if (quantity == 0) {  // 수량을 확인
+                    JOptionPane.showMessageDialog(f, "수량을 선택해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    addToCart();
+                }
             }
         }
     }
+}
 
     private void handleLoginAndPurchase() {
         int result = JOptionPane.showConfirmDialog(f, "로그인이 필요합니다. 로그인하시겠습니까?", "로그인 필요", JOptionPane.YES_NO_OPTION);
