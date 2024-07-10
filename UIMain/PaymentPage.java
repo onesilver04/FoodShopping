@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,7 +10,7 @@ import java.util.Random;
 
 public class PaymentPage extends JFrame {
     JLabel couponLabel, totalAmountLabel, totalAmountValue, productImageLabel, productLabel;
-    JButton pointButton, cardButton, kakaoPayButton, bankTransferButton, changeAddressButton;
+    CustomButton pointButton, cardButton, kakaoPayButton, bankTransferButton, changeAddressButton;
     JComboBox<String> couponComboBox;
     JPanel productPanel, mainPanel, addressPanel, couponPanel, paymentPanel, totalAmountPanel, buttonPanel, productInfoPanel;
     JScrollPane productScrollPane;
@@ -47,6 +48,7 @@ public class PaymentPage extends JFrame {
         // 메인 패널 설정
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+        mainPanel.setBackground(Color.WHITE);
         add(mainPanel);
 
         // 주소 패널
@@ -54,16 +56,19 @@ public class PaymentPage extends JFrame {
         addressPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         addressPanel.setBorder(BorderFactory.createTitledBorder("배송지"));
         addressPanel.setMaximumSize(new Dimension(800, 70));
+        addressPanel.setBackground(Color.WHITE);
 
         // 텍스트 파일에서 주소 읽기
         Member currentUser = SessionManager.getInstance().getCurrentUser();
         String address = currentUser != null ? currentUser.getAddress() : "변경버튼을 눌러서 배송받을 주소를 입력해주세요";
-        
+
         addressTextArea = new JTextArea(address);
         addressTextArea.setEditable(false);
         addressTextArea.setLineWrap(true);
         addressTextArea.setWrapStyleWord(true);
         addressTextArea.setPreferredSize(new Dimension(600, 50));
+        addressTextArea.setFont(new Font("G마켓 산스 TTF Medium", Font.PLAIN, 18));
+        addressTextArea.setForeground(Color.BLACK);
 
         JScrollPane scrollPane = new JScrollPane(addressTextArea);
         scrollPane.setPreferredSize(new Dimension(600, 50)); // 스크롤 팬 크기 조정
@@ -72,7 +77,10 @@ public class PaymentPage extends JFrame {
         addressPanel.add(scrollPane);
 
         // 주소 변경 버튼 이벤트 처리
-        changeAddressButton = new JButton("변경");
+        changeAddressButton = new CustomButton("변경");
+        changeAddressButton.setFont(new Font("G마켓 산스 TTF Medium", Font.PLAIN, 14));
+        changeAddressButton.setPreferredSize(new Dimension(100, 40));
+        addMouseHoverEffect(changeAddressButton, new Color(183, 240, 177));
         changeAddressButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -92,6 +100,7 @@ public class PaymentPage extends JFrame {
         productPanel = new JPanel();
         productPanel.setLayout(new BoxLayout(productPanel, BoxLayout.Y_AXIS));
         productPanel.setBorder(BorderFactory.createTitledBorder("주문상품"));
+        productPanel.setBackground(Color.WHITE);
 
         // 여러 상품 추가
         for (int i = 0; i < products.size(); i++) {
@@ -106,16 +115,21 @@ public class PaymentPage extends JFrame {
         couponPanel = new JPanel(new BorderLayout());
         couponPanel.setBorder(BorderFactory.createTitledBorder("쿠폰 & 할인"));
         couponPanel.setMaximumSize(new Dimension(800, 80)); // 쿠폰 선택 라벨 크기 조정
+        couponPanel.setBackground(Color.WHITE);
 
         couponLabel = new JLabel("사용 가능한 쿠폰");
         couponLabel.setPreferredSize(new Dimension(10, 40)); // 라벨 크기 조정
+        couponLabel.setFont(new Font("G마켓 산스 TTF Medium", Font.PLAIN, 18));
+        couponLabel.setForeground(Color.BLACK);
         couponPanel.add(couponLabel, BorderLayout.NORTH);
 
         // 쿠폰 적용 JComboBox
         couponComboBox = new JComboBox<>(); // ItemEvent
         couponComboBox.addItem("신규 가입 쿠폰(10%)");
         couponComboBox.addItem("여름 맞이 쿠폰(5%)");
-        couponComboBox.setPreferredSize(new Dimension(200, 20)); // JComboBox 크기 조정
+        couponComboBox.setPreferredSize(new Dimension(150, 20)); // JComboBox 크기 조정
+        couponComboBox.setFont(new Font("G마켓 산스 TTF Medium", Font.PLAIN, 16));
+        couponComboBox.setForeground(Color.BLACK);
         couponPanel.add(couponComboBox, BorderLayout.CENTER);
         couponPanel.setPreferredSize(new Dimension(400, 100)); // 쿠폰 선택 combobox 패널 사이즈 조정
         mainPanel.add(couponPanel); // 메인 패널에 쿠폰 패널 추가
@@ -141,19 +155,41 @@ public class PaymentPage extends JFrame {
         // 총 주문 금액 및 결제 수단
         paymentPanel = new JPanel();
         paymentPanel.setLayout(new BoxLayout(paymentPanel, BoxLayout.Y_AXIS));
+        paymentPanel.setBackground(Color.WHITE);
 
         totalAmountPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        totalAmountPanel.setBackground(Color.WHITE);
         totalAmountLabel = new JLabel("총 주문 금액:");
+        totalAmountLabel.setFont(new Font("G마켓 산스 TTF Medium", Font.PLAIN, 18));
+        totalAmountLabel.setForeground(Color.BLACK);
         totalAmountValue = new JLabel(totalAmount + " ₩");
+        totalAmountValue.setFont(new Font("G마켓 산스 TTF Medium", Font.PLAIN, 18));
+        totalAmountValue.setForeground(Color.BLACK);
         totalAmountPanel.add(totalAmountLabel);
         totalAmountPanel.add(totalAmountValue);
         paymentPanel.add(totalAmountPanel);
 
-        buttonPanel = new JPanel(new GridLayout(1, 4));
-        pointButton = new JButton("포인트");
-        cardButton = new JButton("카드");
-        kakaoPayButton = new JButton("카카오페이");
-        bankTransferButton = new JButton("무통장입금");
+        buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10)); // FlowLayout으로 변경하여 간격 조정
+        buttonPanel.setBackground(Color.WHITE);
+        pointButton = new CustomButton("포인트");
+        pointButton.setFont(new Font("G마켓 산스 TTF Medium", Font.BOLD, 16));
+        pointButton.setPreferredSize(new Dimension(120, 40)); // 버튼 크기 조정
+        addMouseHoverEffect(pointButton, new Color(183, 240, 177));
+
+        cardButton = new CustomButton("카드");
+        cardButton.setFont(new Font("G마켓 산스 TTF Medium", Font.BOLD, 16));
+        cardButton.setPreferredSize(new Dimension(120, 40)); // 버튼 크기 조정
+        addMouseHoverEffect(cardButton, new Color(183, 240, 177));
+
+        kakaoPayButton = new CustomButton("카카오페이");
+        kakaoPayButton.setFont(new Font("G마켓 산스 TTF Medium", Font.BOLD, 16));
+        kakaoPayButton.setPreferredSize(new Dimension(120, 40)); // 버튼 크기 조정
+        addMouseHoverEffect(kakaoPayButton, new Color(183, 240, 177));
+
+        bankTransferButton = new CustomButton("무통장입금");
+        bankTransferButton.setFont(new Font("G마켓 산스 TTF Medium", Font.BOLD, 16));
+        bankTransferButton.setPreferredSize(new Dimension(120, 40)); // 버튼 크기 조정
+        addMouseHoverEffect(bankTransferButton, new Color(183, 240, 177));
 
         buttonPanel.add(pointButton);
         buttonPanel.add(cardButton);
@@ -177,7 +213,7 @@ public class PaymentPage extends JFrame {
                     totalAmount -= pointValue; // 총 금액에서 포인트 차감
                     if (totalAmount < 0) totalAmount = 0; // 총 금액이 0보다 작아지지 않도록 설정
                     totalAmountValue.setText(totalAmount + " ₩");
-                    
+
                     currentPoints -= pointValue; // 사용자의 포인트 차감
                     PointsManager.savePoints(currentUser.getId(), currentPoints); // 파일에 포인트 업데이트
                     JOptionPane.showMessageDialog(PaymentPage.this, "포인트 " + pointValue + "가 차감되었습니다.", "포인트 차감", JOptionPane.INFORMATION_MESSAGE); // 포인트 차감 알림창
@@ -203,15 +239,16 @@ public class PaymentPage extends JFrame {
         productInfoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         productImageLabel = new JLabel();
         ImageIcon productImage = new ImageIcon(imagePath);
-        
+
         Image image = productImage.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
         productImage = new ImageIcon(image);
 
         productImageLabel.setIcon(productImage);
         productInfoPanel.add(productImageLabel);
 
-        productLabel = new JLabel(String.format("   %s   %d개   %d원", name, quantity, price));
+        productLabel = new JLabel(String.format("<html><span style='font-family: \"한컴 말랑말랑 Bold\"; font-size: 16px; color: black;'>   %s   %d개   %d원</span></html>", name, quantity, price));
         productInfoPanel.add(productLabel);
+        productInfoPanel.setBackground(Color.WHITE);
         productPanel.add(productInfoPanel); // 상품패널에 상품 정보 표기
     }
 
@@ -237,5 +274,50 @@ public class PaymentPage extends JFrame {
             sb.append(random.nextInt(10));
         }
         return sb.toString();
+    }
+
+    private void addMouseHoverEffect(CustomButton button, Color hoverColor) {
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            Color originalColor = button.getBackground();
+
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                button.setBackground(hoverColor); // 마우스를 가져다 댔을 때 색상 변경
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                button.setBackground(originalColor); // 마우스를 뗐을 때 원래 색상으로 복구
+            }
+        });
+    }
+
+    // 둥근 모서리 테두리를 만드는 클래스
+    class CustomButton extends JButton {
+        public CustomButton(String text) {
+            super(text);
+            setBackground(new Color(47, 157, 39));
+            setForeground(Color.WHITE);
+            setFocusPainted(false);
+            setBorder(new RoundedBorder(10)); // 둥근 모서리 추가
+        }
+    }
+
+    // 둥근 모서리 테두리를 만드는 클래스
+    class RoundedBorder extends LineBorder {
+        private int radius;
+
+        public RoundedBorder(int radius) {
+            super(Color.LIGHT_GRAY, 1, true);
+            this.radius = radius;
+        }
+
+        @Override
+        public void paintBorder(Component c, Graphics g, int x, int y, int width, int height) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(lineColor);
+            g2.drawRoundRect(x, y, width - 1, height - 1, radius, radius);
+        }
     }
 }
