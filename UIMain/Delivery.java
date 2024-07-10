@@ -22,6 +22,10 @@ public class Delivery extends JPanel {
 
     public Delivery() {
         Member currentUser = SessionManager.getInstance().getCurrentUser();
+        if (currentUser == null) {
+            JOptionPane.showMessageDialog(null, "로그인이 필요합니다.", "오류", JOptionPane.ERROR_MESSAGE);
+            return; // 패널을 생성하지 않고 종료
+        }
 
         setLayout(new BorderLayout());
         setBackground(Color.WHITE); // 배경 흰색으로 설정
@@ -64,7 +68,7 @@ public class Delivery extends JPanel {
         profilePanel.add(profileImageLabel);
 
         // 아이디 라벨
-        JLabel idLabel = new JLabel(currentUser != null ? currentUser.getId() : "Guest");
+        JLabel idLabel = new JLabel(currentUser.getId());
         idLabel.setFont(new Font("한컴 말랑말랑 Bold", Font.BOLD, 20));
         idLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         idLabel.setBackground(Color.WHITE); // 배경 흰색으로 설정
@@ -93,6 +97,7 @@ public class Delivery extends JPanel {
         table.setBackground(Color.WHITE); // 테이블 배경 흰색으로 설정
         table.setBorder(new LineBorder(Color.LIGHT_GRAY)); // 테두리 색 설정
         table.setGridColor(Color.LIGHT_GRAY); // 그리드 색 설정
+        table.setPreferredScrollableViewportSize(new Dimension(300, 100)); // 테이블의 선호 크기 설정
 
         // 헤더 색상 변경
         JTableHeader header = table.getTableHeader();
@@ -100,14 +105,14 @@ public class Delivery extends JPanel {
         header.setForeground(Color.BLACK); // 헤더 텍스트 색 설정
 
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setPreferredSize(new Dimension(300, 150)); // 테이블의 크기를 설정
+        scrollPane.setPreferredSize(new Dimension(300, 120)); // 스크롤 팬 크기 설정
         scrollPane.getViewport().setBackground(Color.WHITE); // 테이블 뷰포트 배경 흰색으로 설정
 
         // 테이블 패널 생성
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.add(scrollPane, BorderLayout.CENTER);
         tablePanel.setBackground(Color.WHITE); // 테이블 패널 배경 흰색으로 설정
-        tablePanel.setPreferredSize(new Dimension(300, 150)); // 테이블 패널 크기 설정
+        tablePanel.setPreferredSize(new Dimension(300, 120)); // 테이블 패널 크기 설정
 
         // 아이콘 패널 (아래쪽)
         JPanel iconPanel = new JPanel();
@@ -124,9 +129,7 @@ public class Delivery extends JPanel {
         add(tablePanel, BorderLayout.CENTER);
         add(iconPanel, BorderLayout.SOUTH);
 
-        if (currentUser != null) {
-            loadOrderData(currentUser.getId()); // 로그인된 사용자의 주문 내역 불러오기
-        }
+        loadOrderData(currentUser.getId()); // 로그인된 사용자의 주문 내역 불러오기
     }
 
     // ImageIcon을 생성하기 위한 예제 코드
