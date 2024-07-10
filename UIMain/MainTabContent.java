@@ -25,7 +25,7 @@ public class MainTabContent {
     private Font customFont;
     private Font defaultFont;
     private Font boldFont;
-    private Timer bannerTimer;
+    private Thread bannerThread; // 변경된 부분: 클래스 멤버로 Thread 변수 선언
     private int currentBannerIndex = 0;
     private final String[] bannerImages = {
         "/Image/banner1.jpg",
@@ -121,7 +121,7 @@ public class MainTabContent {
         gbc.ipadx = 70;
         panel.add(searchField, gbc);
 
-        ImageIcon searchIcon = loadImageIcon("/Image/search.png", 20, 20, false);
+        ImageIcon searchIcon = loadImageIcon("/Image/search.png", 20, 20, false); // 경로 설정
         searchClick = new JLabel(searchIcon);
         searchClick.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         searchClick.addMouseListener(new MouseAdapter() {
@@ -141,7 +141,7 @@ public class MainTabContent {
         gbc.weightx = 0;
         panel.add(searchClick, gbc);
 
-        ImageIcon imgSearchIcon = loadImageIcon("/Image/imagesearch.png", 20, 20, false);
+        ImageIcon imgSearchIcon = loadImageIcon("/Image/imagesearch.png", 20, 20, false); // 경로설정
         imgsearchClick = new JLabel(imgSearchIcon);
         imgsearchClick.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         imgsearchClick.addMouseListener(new MouseAdapter() {
@@ -192,10 +192,7 @@ public class MainTabContent {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                // 첫 번째 배너 클릭 시 이벤트 탭으로 전환
-                if (currentBannerIndex == 0) {
-                    MainTab.switchToEventTab(); // MainTab의 정적 메서드 호출
-                }
+				MainTab.switchToEventTab();
             }
         });
 
@@ -332,15 +329,19 @@ public class MainTabContent {
     }
 
     private void startBannerRotation() {
-        bannerTimer = new Timer(5000, new ActionListener() { // 5초마다 이미지 교체
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        bannerThread = new Thread(() -> { // 변경된 부분: Thread를 사용하여 배너 회전 처리
+            while (true) {
+                try {
+                    Thread.sleep(5000); // 5초마다 이미지 교체
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 currentBannerIndex = (currentBannerIndex + 1) % bannerImages.length;
                 ImageIcon bannerIcon = loadImageIcon(bannerImages[currentBannerIndex], banner.getWidth(), banner.getHeight(), false);
-                banner.setIcon(bannerIcon);
+                SwingUtilities.invokeLater(() -> banner.setIcon(bannerIcon));
             }
         });
-        bannerTimer.start();
+        bannerThread.start();
         // 초기 이미지 설정
         ImageIcon initialBannerIcon = loadImageIcon(bannerImages[currentBannerIndex], banner.getWidth(), banner.getHeight(), false);
         banner.setIcon(initialBannerIcon);
