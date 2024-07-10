@@ -1,10 +1,8 @@
-// 포인트 충전 페이지(개인정보와 연결 완료, 버튼 살짝 조정)
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class RechargePointsPage extends JFrame {
     JButton btnBack;
@@ -30,62 +28,81 @@ public class RechargePointsPage extends JFrame {
         setSize(800, 600); // 창 사이즈 통일
         setLocationRelativeTo(null);
 
-        // 패널 설정
-        panel = new JPanel();
-        panel.setLayout(new BorderLayout());
+        // 외부 패널 설정
+        JPanel outerPanel = new JPanel(new GridBagLayout());
+        outerPanel.setBackground(Color.WHITE);
+        GridBagConstraints outerGbc = new GridBagConstraints();
+        outerGbc.insets = new Insets(10, 10, 10, 10);
 
-        // 중앙에 빈 공간 추가
-        panel.add(Box.createVerticalGlue(), BorderLayout.CENTER);
-
-        // 포인트 관련 컴포넌트 추가
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new GridBagLayout()); // GridBagLayout 사용
+        // 내부 둥근 모서리 패널 설정
+        RoundedPanel panel = new RoundedPanel(30, new Color(234, 234, 234));
+        panel.setPreferredSize(new Dimension(400, 300));
+        panel.setBackground(new Color(234, 234, 234));
+        panel.setBorder(new EmptyBorder(20, 20, 20, 20));
+        panel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        Font koreanFont = new Font("한컴 말랑말랑 Bold", Font.BOLD, 20); // 한글 폰트 설정
+        Font koreanFont = new Font("G마켓 산스 TTF Medium", Font.PLAIN, 16); // 한글 폰트 설정
+        Font titleFont = new Font("한컴 말랑말랑 Bold", Font.BOLD, 25); // 타이틀 폰트 설정
 
-        lblCurrentPoints = new JLabel("현재 내 포인트: " + currentPoints);
-        lblCurrentPoints.setHorizontalAlignment(SwingConstants.CENTER);
-        lblCurrentPoints.setFont(koreanFont); // 폰트, 텍스트 크기 설정
+        // 타이틀 레이블
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.gridwidth = 3;
-        centerPanel.add(lblCurrentPoints, gbc);
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        JLabel titleLabel = new JLabel("POINT");
+        titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        titleLabel.setFont(titleFont);
+        panel.add(titleLabel, gbc);
 
-        JLabel lblRechargePrompt = new JLabel("충전할 포인트를 입력하세요: ");
-        lblRechargePrompt.setFont(koreanFont);
-        gbc.gridx = 0;
+        // 현재 포인트 레이블
         gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        centerPanel.add(lblRechargePrompt, gbc);
+        lblCurrentPoints = new JLabel("현재 내 포인트: " + currentPoints);
+        lblCurrentPoints.setHorizontalAlignment(SwingConstants.CENTER);
+        lblCurrentPoints.setFont(koreanFont);
+        panel.add(lblCurrentPoints, gbc);
 
-        tfRechargePoints = new JTextField(10); // 충전할 포인트 입력받을 필드
+        // 포인트 입력 필드
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        tfRechargePoints = new JTextField();
+        tfRechargePoints.setHorizontalAlignment(JTextField.CENTER);
         tfRechargePoints.setFont(koreanFont);
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        centerPanel.add(tfRechargePoints, gbc);
+        panel.add(tfRechargePoints, gbc);
+		
+		Dimension buttonSize = new Dimension(110, 30); // 버튼의 크기를 동일하게 설정
 
-        btnRecharge = new JButton("OK");
-        btnRecharge.setFont(koreanFont); // 작고 귀엽게
-        gbc.gridx = 2;
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        centerPanel.add(btnRecharge, gbc);
-        panel.add(centerPanel, BorderLayout.CENTER);
+        // 충전 버튼
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.NONE;
+        btnRecharge = new JButton("충전");
+        btnRecharge.setFont(koreanFont);
+		btnRecharge.setPreferredSize(buttonSize); // 크기 설정
+        btnRecharge.setBackground(new Color(47, 157, 39));
+        addMouseHoverEffect(btnRecharge, new Color(183, 240, 177));
+        panel.add(btnRecharge, gbc);
 
-        // 돌아가기 버튼 생성 및 하단 중앙에 추가
+        // 돌아가기 버튼
+        gbc.gridy = 4;
         btnBack = new JButton("돌아가기");
         btnBack.setFont(koreanFont);
-        bottomPanel = new JPanel();
-        bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        bottomPanel.add(btnBack);
-        panel.add(bottomPanel, BorderLayout.SOUTH);
+        btnBack.setBackground(Color.LIGHT_GRAY);
+		btnBack.setPreferredSize(buttonSize); // 크기 설정
+        addMouseHoverEffect(btnBack, new Color(183, 240, 177));
+        panel.add(btnBack, gbc);
+
+        outerGbc.gridx = 0;
+        outerGbc.gridy = 0;
+        outerPanel.add(panel, outerGbc);
+
+        add(outerPanel);
 
         // 돌아가기 버튼 클릭 이벤트
         btnBack.addActionListener(e -> {
+			mainPage.updatePoints(); // 포인트 업데이트
             mainPage.setVisible(true);
             dispose(); // 현재 창 닫기
         });
@@ -110,26 +127,61 @@ public class RechargePointsPage extends JFrame {
             }
         });
 
-        // 마우스 호버 효과 추가
-        addMouseHoverEffect(btnRecharge, new Color(173, 216, 230));
-
-        add(panel);
         setVisible(true);
     }
 
-    private void addMouseHoverEffect(JButton button, Color hoverColor) { // 마우스 클릭 효과 이벤트
-        button.addMouseListener(new MouseAdapter() {
+    private void addMouseHoverEffect(JButton button, Color hoverColor) {
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
             Color originalColor = button.getBackground();
 
             @Override
-            public void mouseEntered(MouseEvent e) {
+            public void mouseEntered(java.awt.event.MouseEvent e) {
                 button.setBackground(hoverColor); // 마우스를 가져다 댔을 때 색상 변경
             }
 
             @Override
-            public void mouseExited(MouseEvent e) {
+            public void mouseExited(java.awt.event.MouseEvent e) {
                 button.setBackground(originalColor); // 마우스를 뗐을 때 원래 색상으로 복구
             }
         });
+    }
+
+    // 둥근 모서리 패널을 만드는 클래스
+    private static class RoundedPanel extends JPanel {
+        private final int radius;
+        private Color borderColor;
+
+        RoundedPanel(int radius, Color borderColor) {
+            this.radius = radius;
+            this.borderColor = borderColor;
+            setOpaque(false); // 패널을 투명하게 설정
+        }
+
+        public void setBorderColor(Color color) {
+            this.borderColor = color;
+            repaint();
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(getBackground());
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);
+        }
+
+        @Override
+        protected void paintBorder(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(borderColor);
+            g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, radius, radius);
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            return new Dimension(400, 300); // 패널 크기 조정
+        }
     }
 }
