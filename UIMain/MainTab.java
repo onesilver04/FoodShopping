@@ -87,9 +87,9 @@ public class MainTab {
         loginForm.setTabbedPane(tabbedPane); // TabbedPane을 LoginForm에 전달
         tabbedPane.addTab("로그인", loginForm.getLoginPanel());
         setTabColor(tabbedPane, 1, new Color(47, 157, 39));
-
-        MyPage myPage = new MyPage();
-        myPage.setTabbedPane(tabbedPane); // TabbedPane을 MyPage에 전달
+		
+		JPanel myPage = new JPanel();
+       // MyPage myPage = new MyPage(); // MyPage 객체 생성
         tabbedPane.addTab("마이페이지", myPage);
         setTabColor(tabbedPane, 2, new Color(47, 157, 39));
 
@@ -120,7 +120,17 @@ public class MainTab {
         tabbedPane.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                if (tabbedPane.getSelectedIndex() == 2 || tabbedPane.getSelectedIndex() == 3) { // 장바구니 탭이 선택된 경우
+                int selectedIndex = tabbedPane.getSelectedIndex();
+                if (selectedIndex == 2) { // 마이페이지 탭이 선택된 경우
+                    if (SessionManager.getInstance().getCurrentUser() != null) {
+                        MyPage myPageContent = new MyPage();
+                        tabbedPane.setComponentAt(2, myPageContent);
+                    } else {
+                        JOptionPane.showMessageDialog(jf, "로그인이 필요합니다.");
+                        tabbedPane.setSelectedIndex(1); // 로그인 탭으로 이동
+                    }
+                }
+                if (selectedIndex == 3) { // 장바구니 탭이 선택된 경우
                     if (SessionManager.getInstance().getCurrentUser() != null) {
                         CartTabContent cartTabContent = new CartTabContent();
                         tabbedPane.setComponentAt(3, cartTabContent.getMainPanel());
@@ -129,7 +139,7 @@ public class MainTab {
                         tabbedPane.setSelectedIndex(1); // 로그인 탭으로 이동
                     }
                 }
-                if (tabbedPane.getSelectedIndex() == 4) { // 배송 조회 탭이 선택된 경우
+                if (selectedIndex == 4) { // 배송 조회 탭이 선택된 경우
                     if (SessionManager.getInstance().getCurrentUser() != null) {
                         Delivery deliveryContent = new Delivery();
                         tabbedPane.setComponentAt(4, deliveryContent);
