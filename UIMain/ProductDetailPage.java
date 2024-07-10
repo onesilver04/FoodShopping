@@ -215,54 +215,56 @@ public class ProductDetailPage {
     }
 
     private void showLoginDialog() {
-        JDialog loginDialog = new JDialog(f, "로그인", true);
-        loginDialog.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
+    JDialog loginDialog = new JDialog(f, "로그인", true);
+    loginDialog.setLayout(new GridBagLayout());
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.insets = new Insets(5, 5, 5, 5);
 
-        JLabel idLabel = new JLabel("ID:");
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        loginDialog.add(idLabel, gbc);
+    JLabel idLabel = new JLabel("ID:");
+    gbc.gridx = 0;
+    gbc.gridy = 0;
+    loginDialog.add(idLabel, gbc);
 
-        JTextField idField = new JTextField(10);
-        gbc.gridx = 1;
-        gbc.gridy = 0;
-        loginDialog.add(idField, gbc);
+    JTextField idField = new JTextField(10);
+    gbc.gridx = 1;
+    gbc.gridy = 0;
+    loginDialog.add(idField, gbc);
 
-        JLabel passwordLabel = new JLabel("비밀번호:");
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        loginDialog.add(passwordLabel, gbc);
+    JLabel passwordLabel = new JLabel("비밀번호:");
+    gbc.gridx = 0;
+    gbc.gridy = 1;
+    loginDialog.add(passwordLabel, gbc);
 
-        JPasswordField passwordField = new JPasswordField(10);
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        loginDialog.add(passwordField, gbc);
+    JPasswordField passwordField = new JPasswordField(10);
+    passwordField.setEchoChar('\u25CF'); // 입력된 비밀번호를 유니코드 동그라미 기호로 표시
+    gbc.gridx = 1;
+    gbc.gridy = 1;
+    loginDialog.add(passwordField, gbc);
 
-        JButton loginButton = new JButton("로그인");
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        gbc.gridwidth = 2;
-        loginDialog.add(loginButton, gbc);
+    JButton loginButton = new JButton("로그인");
+    gbc.gridx = 0;
+    gbc.gridy = 2;
+    gbc.gridwidth = 2;
+    loginDialog.add(loginButton, gbc);
 
-        loginButton.addActionListener(e -> {
-            String id = idField.getText();
-            String password = new String(passwordField.getPassword());
-            if (CheckMember.validateLogin(id, password)) {
-                JOptionPane.showMessageDialog(loginDialog, "로그인 성공!");
-                Member loggedInUser = CheckMember.getMemberById(id);
-                SessionManager.getInstance().login(loggedInUser);
-                loginDialog.dispose();
-            } else {
-                JOptionPane.showMessageDialog(loginDialog, "로그인 실패! 아이디 또는 비밀번호를 확인해주세요.");
-            }
-        });
+    loginButton.addActionListener(e -> {
+        String id = idField.getText();
+        String password = new String(passwordField.getPassword());
+        if (CheckMember.validateLogin(id, password)) {
+            JOptionPane.showMessageDialog(loginDialog, "로그인 성공!");
+            Member loggedInUser = CheckMember.getMemberById(id);
+            SessionManager.getInstance().login(loggedInUser);
+            loginDialog.dispose();
+        } else {
+            JOptionPane.showMessageDialog(loginDialog, "로그인 실패! 아이디 또는 비밀번호를 확인해주세요.");
+        }
+    });
 
-        loginDialog.pack();
-        loginDialog.setLocationRelativeTo(f);
-        loginDialog.setVisible(true);
-    }
+    loginDialog.pack();
+    loginDialog.setLocationRelativeTo(f);
+    loginDialog.setVisible(true);
+}
+
 
     // RoundedPanel 클래스 정의
     class RoundedPanel extends JPanel {
