@@ -31,10 +31,12 @@ public class CartTabContent {
 
     private void initComponents() {
         mainPanel = new JPanel(new BorderLayout());
+		mainPanel.setBackground(Color.WHITE);
         mainPanel.setPreferredSize(new Dimension(800, 400)); // 메인 패널 크기 조정
 
         cartPanel = new JPanel();
-        cartPanel.setLayout(new BoxLayout(cartPanel, BoxLayout.Y_AXIS));
+        cartPanel.setBackground(Color.WHITE); // 카트 패널 배경색 설정
+		cartPanel.setLayout(new BoxLayout(cartPanel, BoxLayout.Y_AXIS));
         JScrollPane scrollPane = new JScrollPane(cartPanel);
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER); // 가로 스크롤바 비활성화
         mainPanel.add(scrollPane, BorderLayout.CENTER);
@@ -43,25 +45,32 @@ public class CartTabContent {
         summaryPanel.setLayout(new BoxLayout(summaryPanel, BoxLayout.Y_AXIS));
         summaryPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         summaryPanel.setPreferredSize(new Dimension(200, 400)); // 요약 패널 크기 조정
-        mainPanel.add(summaryPanel, BorderLayout.EAST);
+        summaryPanel.setBackground(Color.WHITE);
+
+		mainPanel.add(summaryPanel, BorderLayout.EAST);
 
         orderAmountLabel = new JLabel("주문금액: 0원");
-        orderAmountLabel.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+        orderAmountLabel.setFont(new Font("G마켓 산스 TTF Medium", Font.PLAIN, 14));
         discountLabel = new JLabel("상품할인: 0원");
-        discountLabel.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+        discountLabel.setFont(new Font("G마켓 산스 TTF Medium", Font.PLAIN, 14));
         totalAmountLabel = new JLabel("결제예정금액: 0원");
-        totalAmountLabel.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+        totalAmountLabel.setFont(new Font("G마켓 산스 TTF Medium", Font.PLAIN, 14));
         finalAmountLabel = new JLabel("최종금액: 0원"); // 최종 금액 라벨 초기화
-        finalAmountLabel.setFont(new Font("맑은 고딕", Font.BOLD, 16));
+        finalAmountLabel.setFont(new Font("G마켓 산스 TTF Medium", Font.BOLD, 16));
 
         summaryPanel.add(orderAmountLabel);
+        summaryPanel.add(Box.createVerticalStrut(10)); // 주문금액과 상품할인 사이의 간격 추가
         summaryPanel.add(discountLabel);
+        summaryPanel.add(Box.createVerticalStrut(10)); // 상품할인과 결제예정금액 사이의 간격 추가
         summaryPanel.add(totalAmountLabel);
+        summaryPanel.add(Box.createVerticalStrut(20)); // 결제예정금액과 최종금액 사이의 간격 추가
         summaryPanel.add(finalAmountLabel); // 최종 금액 라벨 추가
+        summaryPanel.setBackground(Color.WHITE);
 
         orderButton = new JButton("주문하기");
         orderButton.setBackground(Color.RED);
         orderButton.setForeground(Color.WHITE);
+        orderButton.setPreferredSize(new Dimension(200, 35));
         summaryPanel.add(Box.createVerticalGlue()); // 버튼을 아래로 밀기 위해 추가
         summaryPanel.add(orderButton);
 
@@ -208,7 +217,7 @@ public class CartTabContent {
         // 중앙 패널 (상품명)
         JPanel centerPanel = new JPanel(new GridBagLayout());
         JLabel nameLabel = new JLabel(product.getName());
-        nameLabel.setFont(new Font("맑은 고딕", Font.BOLD, 12));
+        nameLabel.setFont(new Font("G마켓 산스 TTF Medium", Font.BOLD, 12));
         centerPanel.add(nameLabel, new GridBagConstraints());
 
         panel.add(centerPanel, BorderLayout.CENTER);
@@ -221,7 +230,7 @@ public class CartTabContent {
         priceQuantityPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
 
         JLabel priceLabel = new JLabel(product.getSalePrice() + "원");
-        priceLabel.setFont(new Font("맑은 고딕", Font.BOLD, 12));
+        priceLabel.setFont(new Font("G마켓 산스 TTF Medium", Font.BOLD, 12));
         priceLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         JPanel quantityPanel = new JPanel(new FlowLayout());
@@ -233,7 +242,7 @@ public class CartTabContent {
         Border border = quantityField.getBorder();
 
         JLabel minusLabel = new JLabel("-");
-        minusLabel.setFont(new Font("맑은 고딕", Font.BOLD, 12));
+        minusLabel.setFont(new Font("G마켓 산스 TTF Medium", Font.BOLD, 12));
         minusLabel.setBorder(border);
         minusLabel.addMouseListener(new MouseAdapter() {
             @Override
@@ -249,7 +258,7 @@ public class CartTabContent {
         });
 
         JLabel plusLabel = new JLabel("+");
-        plusLabel.setFont(new Font("맑은 고딕", Font.BOLD, 12));
+        plusLabel.setFont(new Font("G마켓 산스 TTF Medium", Font.BOLD, 12));
         plusLabel.setBorder(border);
         plusLabel.addMouseListener(new MouseAdapter() {
             @Override
