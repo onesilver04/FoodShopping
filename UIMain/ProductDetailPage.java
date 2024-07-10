@@ -31,6 +31,7 @@ public class ProductDetailPage {
         f.setLocationRelativeTo(null);
 
         JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel.setBackground(Color.WHITE); // 전체 배경 흰색으로 설정
         f.add(contentPanel, BorderLayout.CENTER);
 
         ImageIcon imageIcon = new ImageIcon(product.getImagePath());
@@ -40,13 +41,23 @@ public class ProductDetailPage {
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         contentPanel.add(imageLabel, BorderLayout.WEST);
 
-        JPanel infoPanel = new JPanel(new GridBagLayout());
+
+        RoundedPanel infoPanel = new RoundedPanel(20, new Color(240, 240, 240));
+        infoPanel.setPreferredSize(new Dimension(300, 100)); // RoundedPanel의 크기 직접 설정
+        infoPanel.setLayout(new GridBagLayout());
+        infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10)); // 패널 내부 여백을 조정
+		
+		
+        JPanel infoPanelContainer = new JPanel(new BorderLayout());
+        infoPanelContainer.setBackground(Color.WHITE); // 컨테이너 패널 배경 흰색으로 설정
+        infoPanelContainer.setBorder(BorderFactory.createEmptyBorder(100, 20, 100, 20)); // 상단과 하단 여백을 20으로 설정
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5); // 컴포넌트 간의 간격을 설정합니다.
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel nameLabel = new JLabel(product.getName());
-        nameLabel.setFont(new Font("Malgun Gothic", Font.BOLD, 20));
+        nameLabel.setFont(new Font("한컴 말랑말랑 Bold", Font.BOLD, 20));
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -112,6 +123,7 @@ public class ProductDetailPage {
         infoPanel.add(totalLabel, gbc);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.setBackground(new Color(240, 240, 240)); // 버튼 패널 배경 설정
         JButton addToCartButton = new JButton("장바구니 담기");
         addToCartButton.setBackground(Color.BLACK);
         addToCartButton.setForeground(Color.WHITE);
@@ -144,7 +156,8 @@ public class ProductDetailPage {
         gbc.anchor = GridBagConstraints.EAST;
         infoPanel.add(buttonPanel, gbc);
 
-        contentPanel.add(infoPanel, BorderLayout.CENTER);
+        infoPanelContainer.add(infoPanel, BorderLayout.CENTER);
+        contentPanel.add(infoPanelContainer, BorderLayout.CENTER);
 
         f.setVisible(true);
     }
@@ -155,26 +168,17 @@ public class ProductDetailPage {
     }
 
     private void handleCartButton() {
-		if (SessionManager.getInstance().getCurrentUser() != null) {
-        if (quantity == 0) {  // 수량을 확인
-            JOptionPane.showMessageDialog(f, "수량을 선택해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
-        } else {
+        if (SessionManager.getInstance().getCurrentUser() != null) {
             addToCart();
-        }
-    } else {
-        int result = JOptionPane.showConfirmDialog(f, "로그인이 필요합니다. 로그인하시겠습니까?", "로그인 필요", JOptionPane.YES_NO_OPTION);
-        if (result == JOptionPane.YES_OPTION) {
-            showLoginDialog();
-            if (SessionManager.getInstance().getCurrentUser() != null) {  // 로그인 성공 시
-                if (quantity == 0) {  // 수량을 확인
-                    JOptionPane.showMessageDialog(f, "수량을 선택해주세요.", "경고", JOptionPane.WARNING_MESSAGE);
-                } else {
-                    addToCart();
-                }
+        } else {
+            int result = JOptionPane.showConfirmDialog(f, "로그인이 필요합니다. 로그인하시겠습니까?", "로그인 필요", JOptionPane.YES_NO_OPTION);
+            if (result == JOptionPane.YES_OPTION) {
+                showLoginDialog();
+                addToCart();
             }
         }
     }
-}
+
 
     private void handleLoginAndPurchase() {
         int result = JOptionPane.showConfirmDialog(f, "로그인이 필요합니다. 로그인하시겠습니까?", "로그인 필요", JOptionPane.YES_NO_OPTION);
@@ -258,5 +262,26 @@ public class ProductDetailPage {
         loginDialog.pack();
         loginDialog.setLocationRelativeTo(f);
         loginDialog.setVisible(true);
+    }
+
+    // RoundedPanel 클래스 정의
+    class RoundedPanel extends JPanel {
+        private int cornerRadius;
+        private Color backgroundColor;
+
+        public RoundedPanel(int cornerRadius, Color backgroundColor) {
+            this.cornerRadius = cornerRadius;
+            this.backgroundColor = backgroundColor;
+            setOpaque(false); // 투명하게 설정하여 배경을 직접 그리도록 합니다.
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(backgroundColor);
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius);
+        }
     }
 }
