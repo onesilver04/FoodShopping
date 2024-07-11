@@ -57,9 +57,18 @@ public class Delivery extends JPanel {
 
         // 프로필 사진
         JLabel profileImageLabel = new JLabel();
-        ImageIcon profileImage = new ImageIcon("images/profile.jpg");
+        ImageIcon profileImage = new ImageIcon("@@images/profile.jpg");
         if (profileImage.getIconWidth() == -1) {
             System.err.println("이미지를 로드할 수 없습니다: images/profile.jpg");
+            // 기본 이미지로 대체
+            profileImage = new ImageIcon("images/default_profile.jpg");
+            if (profileImage.getIconWidth() == -1) {
+                System.err.println("기본 이미지를 로드할 수 없습니다: images/default_profile.jpg");
+            } else {
+                Image image = profileImage.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                profileImage.setImage(image);
+                profileImageLabel.setIcon(profileImage);
+            }
         } else {
             Image image = profileImage.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
             profileImage.setImage(image);
@@ -115,20 +124,10 @@ public class Delivery extends JPanel {
         tablePanel.setBackground(Color.WHITE);
         tablePanel.setPreferredSize(new Dimension(300, 120));
 
-        // 아이콘 패널 (아래쪽)
-        JPanel iconPanel = new JPanel();
-        iconPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
-        iconPanel.setBackground(Color.WHITE);
-
-        // 사진 4개 추가
-        iconPanel.add(createImageLabel("images/order.jpg", "주문 완료", 45, 45));
-        iconPanel.add(createImageLabel("images/out_for_delivery.jpg", "배송지 출발", 50, 50));
-        iconPanel.add(createImageLabel("images/in_transit.png", "배송 중", 50, 50));
-        iconPanel.add(createImageLabel("images/delivered.png", "배송 완료", 50, 50));
-
+   
+        
         // 메인 패널에 테이블 패널과 아이콘 패널 추가
         add(tablePanel, BorderLayout.CENTER);
-        add(iconPanel, BorderLayout.SOUTH);
 
         loadOrderData(currentUser.getId());
     }
@@ -137,7 +136,11 @@ public class Delivery extends JPanel {
         ImageIcon icon = new ImageIcon(relativePath);
         if (icon.getIconWidth() == -1) {
             System.err.println("이미지를 로드할 수 없습니다: " + relativePath);
-            return new JLabel(text);
+            JLabel label = new JLabel(text);
+            label.setHorizontalTextPosition(JLabel.CENTER);
+            label.setVerticalTextPosition(JLabel.BOTTOM);
+            label.setBackground(Color.WHITE);
+            return label;
         } else {
             Image image = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
             icon.setImage(image);
