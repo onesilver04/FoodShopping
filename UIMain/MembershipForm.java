@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -209,7 +210,7 @@ public class MembershipForm {
                 }
 
 
-                if (isIdDuplicated(id, name)) { //isIdDuplicated 함수에 의해 member.txt에 저장된 정보와 비교
+                if (isIdDuplicated(id)) { //isIdDuplicated 함수에 의해 member.txt에 저장된 정보와 비교
                     JOptionPane.showMessageDialog(r, "이미 존재하는 아이디입니다!");
                     return;
                 }
@@ -267,12 +268,12 @@ public class MembershipForm {
     }
 
     // 입력받은 회원정보를 member.txt에 있는 name(parts[0]), id(parts[1])정보와 비교
-    private static boolean isIdDuplicated(String id, String name) {
+    private static boolean isIdDuplicated(String id) {
         try (BufferedReader br = new BufferedReader(new FileReader("members.txt"))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] userInfo = line.split(",");
-                if (userInfo.length >= 2 && (userInfo[1].equals(id) || userInfo[0].equals(name))) {
+                if (userInfo.length >= 2 && (userInfo[1].equals(id))) {
                     return true;
                 }
             }
