@@ -5,14 +5,15 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.AbstractCellEditor;
 import javax.swing.table.JTableHeader;
 import javax.swing.border.LineBorder;
+import java.awt.Desktop;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 public class Delivery extends JPanel {
     private static final long serialVersionUID = 1L;
@@ -24,23 +25,23 @@ public class Delivery extends JPanel {
         Member currentUser = SessionManager.getInstance().getCurrentUser();
         if (currentUser == null) {
             JOptionPane.showMessageDialog(null, "로그인이 필요합니다.", "오류", JOptionPane.ERROR_MESSAGE);
-            return; // 패널을 생성하지 않고 종료
+            return;
         }
 
         setLayout(new BorderLayout());
-        setBackground(Color.WHITE); // 배경 흰색으로 설정
+        setBackground(Color.WHITE);
 
         // 테이블 모델 생성
-        String[] columnNames = {"주문 물품", "수량", "운송장 번호", "배송조회"};
+        String[] columnNames = {"주문 물품", "수량", "운송장 번호", "배송 상태", "배송조회"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 3; // 배송조회 버튼만 편집 가능
+                return column == 2 || column == 4; // 운송장 번호와 배송조회 버튼만 편집 가능
             }
 
             @Override
             public Class<?> getColumnClass(int columnIndex) {
-                if (columnIndex == 3) {
+                if (columnIndex == 4) {
                     return JButton.class;
                 }
                 return String.class;
@@ -52,11 +53,11 @@ public class Delivery extends JPanel {
         profilePanel.setLayout(new BoxLayout(profilePanel, BoxLayout.Y_AXIS));
         profilePanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         profilePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        profilePanel.setBackground(Color.WHITE); // 배경 흰색으로 설정
+        profilePanel.setBackground(Color.WHITE);
 
         // 프로필 사진
         JLabel profileImageLabel = new JLabel();
-        ImageIcon profileImage = new ImageIcon("images/profile.jpg"); // 상대 경로를 사용하여 이미지 로드
+        ImageIcon profileImage = new ImageIcon("images/profile.jpg");
         if (profileImage.getIconWidth() == -1) {
             System.err.println("이미지를 로드할 수 없습니다: images/profile.jpg");
         } else {
@@ -71,7 +72,7 @@ public class Delivery extends JPanel {
         JLabel idLabel = new JLabel(currentUser.getId());
         idLabel.setFont(new Font("한컴 말랑말랑 Bold", Font.BOLD, 20));
         idLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        idLabel.setBackground(Color.WHITE); // 배경 흰색으로 설정
+        idLabel.setBackground(Color.WHITE);
         profilePanel.add(idLabel);
 
         add(profilePanel, BorderLayout.NORTH);
@@ -80,7 +81,7 @@ public class Delivery extends JPanel {
         table = new JTable(tableModel) {
             @Override
             public TableCellRenderer getCellRenderer(int row, int column) {
-                if (column == 3) {
+                if (column == 4) {
                     return new ButtonRenderer();
                 }
                 return super.getCellRenderer(row, column);
@@ -88,36 +89,36 @@ public class Delivery extends JPanel {
 
             @Override
             public TableCellEditor getCellEditor(int row, int column) {
-                if (column == 3) {
+                if (column == 4) {
                     return new ButtonEditor(new JCheckBox());
                 }
                 return super.getCellEditor(row, column);
             }
         };
-        table.setBackground(Color.WHITE); // 테이블 배경 흰색으로 설정
-        table.setBorder(new LineBorder(Color.LIGHT_GRAY)); // 테두리 색 설정
-        table.setGridColor(Color.LIGHT_GRAY); // 그리드 색 설정
-        table.setPreferredScrollableViewportSize(new Dimension(300, 100)); // 테이블의 선호 크기 설정
+        table.setBackground(Color.WHITE);
+        table.setBorder(new LineBorder(Color.LIGHT_GRAY));
+        table.setGridColor(Color.LIGHT_GRAY);
+        table.setPreferredScrollableViewportSize(new Dimension(300, 100));
 
         // 헤더 색상 변경
         JTableHeader header = table.getTableHeader();
-        header.setBackground(new Color(183, 240, 177)); // 헤더 배경 색 설정
-        header.setForeground(Color.BLACK); // 헤더 텍스트 색 설정
+        header.setBackground(new Color(183, 240, 177));
+        header.setForeground(Color.BLACK);
 
         JScrollPane scrollPane = new JScrollPane(table);
-        scrollPane.setPreferredSize(new Dimension(300, 120)); // 스크롤 팬 크기 설정
-        scrollPane.getViewport().setBackground(Color.WHITE); // 테이블 뷰포트 배경 흰색으로 설정
+        scrollPane.setPreferredSize(new Dimension(300, 120));
+        scrollPane.getViewport().setBackground(Color.WHITE);
 
         // 테이블 패널 생성
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.add(scrollPane, BorderLayout.CENTER);
-        tablePanel.setBackground(Color.WHITE); // 테이블 패널 배경 흰색으로 설정
-        tablePanel.setPreferredSize(new Dimension(300, 120)); // 테이블 패널 크기 설정
+        tablePanel.setBackground(Color.WHITE);
+        tablePanel.setPreferredSize(new Dimension(300, 120));
 
         // 아이콘 패널 (아래쪽)
         JPanel iconPanel = new JPanel();
-        iconPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10)); // 가운데 정렬, 수평 간격 20, 수직 간격 10
-        iconPanel.setBackground(Color.WHITE); // 배경 흰색으로 설정
+        iconPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
+        iconPanel.setBackground(Color.WHITE);
 
         // 사진 4개 추가
         iconPanel.add(createImageLabel("images/order.jpg", "주문 완료", 45, 45));
@@ -129,10 +130,9 @@ public class Delivery extends JPanel {
         add(tablePanel, BorderLayout.CENTER);
         add(iconPanel, BorderLayout.SOUTH);
 
-        loadOrderData(currentUser.getId()); // 로그인된 사용자의 주문 내역 불러오기
+        loadOrderData(currentUser.getId());
     }
 
-    // ImageIcon을 생성하기 위한 예제 코드
     private JLabel createImageLabel(String relativePath, String text, int width, int height) {
         ImageIcon icon = new ImageIcon(relativePath);
         if (icon.getIconWidth() == -1) {
@@ -144,7 +144,7 @@ public class Delivery extends JPanel {
             JLabel label = new JLabel(text, icon, JLabel.CENTER);
             label.setHorizontalTextPosition(JLabel.CENTER);
             label.setVerticalTextPosition(JLabel.BOTTOM);
-            label.setBackground(Color.WHITE); // 배경 흰색으로 설정
+            label.setBackground(Color.WHITE);
             return label;
         }
     }
@@ -155,7 +155,8 @@ public class Delivery extends JPanel {
             while ((line = reader.readLine()) != null) {
                 String[] parts = line.split(",");
                 if (parts.length >= 6 && parts[0].equals(memberId)) {
-                    tableModel.addRow(new Object[]{parts[1], parts[2], parts[5], "배송조회"});
+                    String trackingNumber = parts[5];
+                    tableModel.addRow(new Object[]{parts[1], parts[2], trackingNumber, "조회 필요", "배송조회"});
                 }
             }
         } catch (IOException e) {
@@ -163,14 +164,33 @@ public class Delivery extends JPanel {
         }
     }
 
+    private String fetchDeliveryStatus(String trackingNumber) {
+        try {
+            DeliveryStatus status = DeliveryApiClient.getDeliveryStatus(trackingNumber);
+            return status.getStatus();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "조회 실패";
+        }
+    }
+
     public void setTabbedPane(JTabbedPane tabbedPane) {
         this.tabbedPane = tabbedPane;
     }
 
-    private void openTrackingURL(String trackingNumber) {
-        String url = "https://trace.cjlogistics.com/web/detail.jsp?trackingNumber=" + trackingNumber;
+    private void updateDeliveryStatus(String trackingNumber, int rowIndex) {
+        SwingUtilities.invokeLater(() -> {
+            String updatedStatus = fetchDeliveryStatus(trackingNumber);
+            tableModel.setValueAt(updatedStatus, rowIndex, 3);
+        });
+    }
+
+    private void openTrackingURL(String trackingNumber, int rowIndex) {
+        String url = "https://trace.cjlogistics.com/web/detail.jsp?slipno=" + trackingNumber;
         try {
             Desktop.getDesktop().browse(new URI(url));
+            // 배송 상태 업데이트
+            updateDeliveryStatus(trackingNumber, rowIndex);
         } catch (IOException | URISyntaxException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "URL을 여는 중 오류가 발생했습니다.", "오류", JOptionPane.ERROR_MESSAGE);
@@ -180,7 +200,7 @@ public class Delivery extends JPanel {
     class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
-            setBackground(Color.WHITE); // 버튼 배경 흰색으로 설정
+            setBackground(Color.WHITE);
         }
 
         public Component getTableCellRendererComponent(JTable table, Object value,
@@ -193,16 +213,18 @@ public class Delivery extends JPanel {
     class ButtonEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
         private JButton button;
         private String trackingNumber;
+        private int rowIndex;
 
         public ButtonEditor(JCheckBox checkBox) {
             button = new JButton("배송조회");
             button.addActionListener(this);
-            button.setBackground(Color.WHITE); // 버튼 배경 흰색으로 설정
+            button.setBackground(Color.WHITE);
         }
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-            trackingNumber = (String) table.getValueAt(row, 2); // 운송장 번호 열에서 값을 가져옴
+            trackingNumber = (String) table.getValueAt(row, 2);
+            rowIndex = row;
             button.setText((value == null) ? "배송조회" : value.toString());
             return button;
         }
@@ -214,7 +236,8 @@ public class Delivery extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            openTrackingURL(trackingNumber);
+            updateDeliveryStatus(trackingNumber, rowIndex); // 배송 상태 업데이트
+            openTrackingURL(trackingNumber, rowIndex); // URL 열기
             fireEditingStopped();
         }
     }
